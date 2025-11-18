@@ -23,8 +23,10 @@ const TestDetail = () => {
   const { testId } = useParams();
   const test = testData[testId];
   const [stats, setStats] = useState(null);
+  const [rawData, setRawData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showRawData, setShowRawData] = useState(false);
 
   useEffect(() => {
     async function loadResults() {
@@ -33,6 +35,7 @@ const TestDetail = () => {
         const data = await fetchTestResults(testId);
         const statistics = calculateStatistics(data);
         setStats(statistics);
+        setRawData(data);
       } catch (err) {
         console.error('Error loading results:', err);
         setError(err.message);
@@ -45,6 +48,65 @@ const TestDetail = () => {
       loadResults();
     }
   }, [testId]);
+
+  const handleExportResults = () => {
+    if (!stats || !rawData) {
+      alert('No data to export');
+      return;
+    }
+
+    // Create CSV content
+    let csv = 'Birth Record Highlights User Test Results\n\n';
+
+    // Summary statistics
+    csv += 'SUMMARY\n';
+    csv += `Total Participants,${stats.totalParticipants}\n`;
+    csv += `Completion Rate,100%\n\n`;
+
+    // Task performance
+    csv += 'TASK PERFORMANCE\n';
+    csv += 'Task,Avg Time (seconds),Avg Difficulty (1-5),Self-Reported Success %,Actual Success %,Total Attempts\n';
+    ['A', 'B', 'C'].forEach(taskId => {
+      const taskStat = stats.taskStats[taskId];
+      if (taskStat) {
+        csv += `Task ${taskId},${taskStat.avgTimeSeconds},${taskStat.avgDifficulty},${taskStat.selfReportedSuccessRate},${taskStat.actualSuccessRate},${taskStat.totalAttempts}\n`;
+      }
+    });
+
+    csv += '\n';
+
+    // Method preferences
+    csv += 'METHOD PREFERENCES\n';
+    csv += 'Method,Count,Percentage\n';
+    stats.preferenceStats.forEach(pref => {
+      csv += `${pref.method},${pref.count},${pref.percentage}%\n`;
+    });
+
+    csv += '\n';
+
+    // Preference reasons
+    csv += 'USER FEEDBACK\n';
+    csv += 'Preferred Method,Reason\n';
+    stats.preferenceReasons.forEach(item => {
+      const reason = item.reason.replace(/"/g, '""'); // Escape quotes
+      csv += `Task ${item.method},"${reason}"\n`;
+    });
+
+    // Download the file
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `highlights-test-results-${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleViewRawData = () => {
+    setShowRawData(true);
+  };
 
   if (!test) {
     return (
@@ -237,10 +299,18 @@ const TestDetail = () => {
                 >
                   Launch Test
                 </a>
-                <button className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                <button
+                  onClick={handleExportResults}
+                  disabled={loading || !stats || stats.totalParticipants === 0}
+                  className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   Export Results
                 </button>
-                <button className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                <button
+                  onClick={handleViewRawData}
+                  disabled={loading || !rawData}
+                  className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
                   View Raw Data
                 </button>
               </div>
@@ -277,6 +347,54 @@ const TestDetail = () => {
           </div>
         </div>
       </main>
+
+      {/* Raw Data Modal */}
+      {showRawData && rawData && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-gray-900">Raw Data</h2>
+              <button
+                onClick={() => setShowRawData(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6 overflow-auto flex-1">
+              <pre className="text-xs bg-gray-50 p-4 rounded border border-gray-200 overflow-auto">
+                {JSON.stringify(rawData, null, 2)}
+              </pre>
+            </div>
+            <div className="p-6 border-t border-gray-200 flex gap-3">
+              <button
+                onClick={() => {
+                  const blob = new Blob([JSON.stringify(rawData, null, 2)], { type: 'application/json' });
+                  const url = window.URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `highlights-test-raw-data-${new Date().toISOString().split('T')[0]}.json`;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  window.URL.revokeObjectURL(url);
+                }}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+              >
+                Download JSON
+              </button>
+              <button
+                onClick={() => setShowRawData(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
