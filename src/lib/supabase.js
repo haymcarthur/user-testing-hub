@@ -1,0 +1,109 @@
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Fetch all test results for a given test
+export async function fetchTestResults(testId = 'highlights') {
+  try {
+    // Fetch all sessions for this test
+    const { data: sessions, error: sessionsError } = await supabase
+      .from('test_sessions')
+      .select('*')
+      .eq('test_id', testId)
+      .not('completed_at', 'is', null) // Only completed sessions
+      .order('created_at', { ascending: false });
+
+    if (sessionsError) throw sessionsError;
+
+    // Fetch all task completions
+    const { data: taskCompletions, error: taskError } = await supabase
+      .from('task_completions')
+      .select('*')
+      .in('session_id', sessions.map(s => s.id));
+
+    if (taskError) throw taskError;
+
+    // Fetch all survey responses
+    const { data: surveyResponses, error: surveyError } = await supabase
+      .from('survey_responses')
+      .select('*')
+      .in('session_id', sessions.map(s => s.id));
+
+    if (surveyError) throw surveyError;
+
+    // Fetch validation data
+    const { data: validationData, error: validationError } = await supabase
+      .from('task_validation_data')
+      .select('*')
+      .in('session_id', sessions.map(s => s.id));
+
+    if (validationError) throw validationError;
+
+    return {
+      sessions,
+      taskCompletions,
+      surveyResponses,
+      validationData,
+    };
+  } catch (error) {
+    console.error('Error fetching test results:', error);
+    throw error;
+  }
+}
+
+// Calculate statistics from raw data
+export function calculateStatistics(data) {
+  const { sessions, taskCompletions, surveyResponses } = data;
+
+  // Total participants
+  const totalParticipants = sessions.length;
+
+  // Task statistics
+  const taskStats = {};
+  ['A', 'B', 'C'].forEach(taskId => {
+    const taskData = taskCompletions.filter(tc => tc.task_id === taskId);
+
+    if (taskData.length > 0) {
+      const avgTime = taskData.reduce((sum, tc) => sum + (tc.time_spent_seconds || 0), 0) / taskData.length;
+      const selfReportedSuccess = taskData.filter(tc => tc.self_reported_success).length;
+      const actualSuccess = taskData.filter(tc => tc.actual_success).length;
+      const avgDifficulty = taskData.reduce((sum, tc) => sum + tc.difficulty_rating, 0) / taskData.length;
+
+      taskStats[taskId] = {
+        avgTimeSeconds: Math.round(avgTime),
+        selfReportedSuccessRate: Math.round((selfReportedSuccess / taskData.length) * 100),
+        actualSuccessRate: Math.round((actualSuccess / taskData.length) * 100),
+        avgDifficulty: avgDifficulty.toFixed(1),
+        totalAttempts: taskData.length,
+      };
+    }
+  });
+
+  // Method preferences
+  const preferences = {};
+  surveyResponses.forEach(sr => {
+    preferences[sr.preferred_method] = (preferences[sr.preferred_method] || 0) + 1;
+  });
+
+  const preferenceStats = Object.entries(preferences).map(([method, count]) => ({
+    method: `Task ${method}`,
+    count,
+    percentage: Math.round((count / surveyResponses.length) * 100),
+  }));
+
+  // Get preference reasons
+  const preferenceReasons = surveyResponses.map(sr => ({
+    method: sr.preferred_method,
+    reason: sr.preference_reason,
+  }));
+
+  return {
+    totalParticipants,
+    taskStats,
+    preferenceStats,
+    preferenceReasons,
+  };
+}

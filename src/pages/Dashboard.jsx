@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 const tests = [
   {
@@ -14,6 +16,35 @@ const tests = [
 ];
 
 const Dashboard = () => {
+  const [participantCounts, setParticipantCounts] = useState({});
+
+  useEffect(() => {
+    async function fetchParticipantCounts() {
+      try {
+        const { data, error } = await supabase
+          .from('test_sessions')
+          .select('test_id')
+          .not('completed_at', 'is', null);
+
+        if (error) throw error;
+
+        const counts = data.reduce((acc, session) => {
+          acc[session.test_id] = (acc[session.test_id] || 0) + 1;
+          return acc;
+        }, {});
+
+        setParticipantCounts(counts);
+      } catch (err) {
+        console.error('Error fetching participant counts:', err);
+      }
+    }
+
+    fetchParticipantCounts();
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchParticipantCounts, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleLogout = () => {
     sessionStorage.removeItem('authenticated');
     window.location.reload();
@@ -64,7 +95,7 @@ const Dashboard = () => {
                 <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
                   <span>Created: {test.created}</span>
                   <span>•</span>
-                  <span>{test.participants} participants</span>
+                  <span>{participantCounts[test.id] || 0} participants</span>
                 </div>
 
                 <div className="flex gap-2">
