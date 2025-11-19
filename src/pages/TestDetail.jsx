@@ -27,6 +27,8 @@ const TestDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showRawData, setShowRawData] = useState(false);
+  const [expandedTasks, setExpandedTasks] = useState({});
+  const [hoveredTask, setHoveredTask] = useState(null);
 
   useEffect(() => {
     async function loadResults() {
@@ -209,38 +211,246 @@ const TestDetail = () => {
                   {/* Task Performance */}
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3">Task Performance</h3>
-                    <div className="space-y-4">
-                      {['A', 'B', 'C'].map(taskId => {
-                        const taskStat = stats.taskStats[taskId];
-                        if (!taskStat) return null;
 
-                        return (
-                          <div key={taskId} className="border-l-4 border-blue-500 pl-4">
-                            <div className="flex justify-between items-center mb-2">
-                              <h4 className="font-medium text-gray-900">Task {taskId}</h4>
-                              <span className="text-sm text-gray-500">{taskStat.totalAttempts} completions</span>
+                    {/* Average Time Bar Graph */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Average Time (seconds)</h4>
+                      <div className="space-y-3">
+                        {['A', 'B', 'C'].map(taskId => {
+                          const taskStat = stats.taskStats[taskId];
+                          if (!taskStat) return null;
+
+                          const maxTime = Math.max(...Object.values(stats.taskStats).map(t => t.avgTimeSeconds));
+                          const widthPercent = (taskStat.avgTimeSeconds / maxTime) * 100;
+
+                          return (
+                            <div key={taskId}>
+                              <div className="flex items-center gap-3 mb-1">
+                                <span className="text-sm font-medium text-gray-700 w-16">Task {taskId}</span>
+                                <div className="flex-1 bg-gray-200 rounded h-8 relative">
+                                  <div
+                                    className="bg-blue-600 h-8 rounded flex items-center px-3"
+                                    style={{ width: `${widthPercent}%` }}
+                                  >
+                                    <span className="text-sm font-medium text-white">{taskStat.avgTimeSeconds}s</span>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4 text-sm">
-                              <div>
-                                <p className="text-gray-600">Avg Time:</p>
-                                <p className="font-medium">{Math.floor(taskStat.avgTimeSeconds / 60)}:{String(taskStat.avgTimeSeconds % 60).padStart(2, '0')}</p>
-                              </div>
-                              <div>
-                                <p className="text-gray-600">Avg Difficulty:</p>
-                                <p className="font-medium">{taskStat.avgDifficulty} / 5</p>
-                              </div>
-                              <div>
-                                <p className="text-gray-600">Self-Reported Success:</p>
-                                <p className="font-medium">{taskStat.selfReportedSuccessRate}%</p>
-                              </div>
-                              <div>
-                                <p className="text-gray-600">Actual Success:</p>
-                                <p className="font-medium">{taskStat.actualSuccessRate}%</p>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Average Difficulty Bar Graph */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Average Difficulty (1 = Very Difficult, 5 = Very Easy)</h4>
+                      <div className="space-y-3">
+                        {['A', 'B', 'C'].map(taskId => {
+                          const taskStat = stats.taskStats[taskId];
+                          if (!taskStat || !taskStat.avgDifficulty) return null;
+
+                          const avgDifficultyNum = typeof taskStat.avgDifficulty === 'string'
+                            ? parseFloat(taskStat.avgDifficulty)
+                            : taskStat.avgDifficulty;
+                          const widthPercent = (avgDifficultyNum / 5) * 100;
+
+                          return (
+                            <div key={taskId}>
+                              <div className="flex items-center gap-3 mb-1">
+                                <span className="text-sm font-medium text-gray-700 w-16">Task {taskId}</span>
+                                <div className="flex-1 bg-gray-200 rounded h-8 relative">
+                                  <div
+                                    className="bg-green-600 h-8 rounded flex items-center px-3"
+                                    style={{ width: `${widthPercent}%` }}
+                                  >
+                                    <span className="text-sm font-medium text-white">{avgDifficultyNum.toFixed(1)} / 5</span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Success Quadrant Matrix */}
+                    <div className="mb-6">
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Success Comparison</h4>
+
+                      {/* Scatter Plot Matrix */}
+                      <div className="relative w-full h-96 border border-gray-300 rounded-lg bg-white p-6 mt-8 mb-12">
+                        {/* Y-axis label */}
+                        <div className="absolute left-0 top-1/2 -translate-y-1/2 -rotate-90 origin-center text-xs font-medium text-gray-600 whitespace-nowrap" style={{ transformOrigin: 'center', left: '-90px' }}>
+                          Actual Success Rate (%)
+                        </div>
+
+                        {/* X-axis label */}
+                        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-600 whitespace-nowrap" style={{ bottom: '-30px' }}>
+                          Self-Reported Success Rate (%)
+                        </div>
+
+                        {/* Inner graph area */}
+                        <div className="relative w-full h-full overflow-visible">
+                          {/* Quadrant backgrounds */}
+                          <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-red-50"></div>
+                          <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-green-50"></div>
+                          <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-yellow-50"></div>
+                          <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-blue-50"></div>
+
+                          {/* Grid lines */}
+                          <div className="absolute top-0 left-1/2 w-px h-full bg-gray-300"></div>
+                          <div className="absolute top-1/2 left-0 w-full h-px bg-gray-300"></div>
+
+                          {/* Quadrant labels */}
+                          <div className="absolute top-2 left-2 text-xs font-medium text-gray-500">
+                            High Confidence<br/>Low Success
                           </div>
-                        );
-                      })}
+                          <div className="absolute top-2 right-2 text-xs font-medium text-gray-500 text-right">
+                            High Confidence<br/>High Success
+                          </div>
+                          <div className="absolute bottom-2 left-2 text-xs font-medium text-gray-500">
+                            Low Confidence<br/>Low Success
+                          </div>
+                          <div className="absolute bottom-2 right-2 text-xs font-medium text-gray-500 text-right">
+                            Low Confidence<br/>High Success
+                          </div>
+
+                          {/* Axis labels */}
+                          <div className="absolute -bottom-6 left-0 text-xs text-gray-500">0%</div>
+                          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-gray-500">50%</div>
+                          <div className="absolute -bottom-6 right-0 text-xs text-gray-500">100%</div>
+                          <div className="absolute -top-5 -left-8 text-xs text-gray-500">100%</div>
+                          <div className="absolute top-1/2 -translate-y-1/2 -left-8 text-xs text-gray-500">50%</div>
+                          <div className="absolute bottom-0 -left-8 text-xs text-gray-500">0%</div>
+
+                          {/* Plot points - Individual Results */}
+                          {rawData && rawData.taskCompletions && rawData.taskCompletions.map((completion, index) => {
+                            // Convert boolean to percentage
+                            const x = completion.self_reported_success ? 100 : 0;
+                            const y = 100 - (completion.actual_success ? 100 : 0); // Invert for CSS positioning
+
+                            const colors = {
+                              A: 'bg-blue-600',
+                              B: 'bg-orange-600',
+                              C: 'bg-purple-600'
+                            };
+
+                            const borderColors = {
+                              A: 'border-blue-600',
+                              B: 'border-orange-600',
+                              C: 'border-purple-600'
+                            };
+
+                            // Show dot only if no task is hovered OR if this dot's task matches the hovered task
+                            const isVisible = !hoveredTask || hoveredTask === completion.task_id;
+
+                            return (
+                              <div
+                                key={`${completion.session_id}-${completion.task_id}-${index}`}
+                                className="absolute transition-opacity duration-200"
+                                style={{
+                                  left: `${x}%`,
+                                  top: `${y}%`,
+                                  transform: 'translate(-50%, -50%)',
+                                  opacity: isVisible ? 1 : 0
+                                }}
+                                title={`Task ${completion.task_id}: Self-reported ${completion.self_reported_success ? 'Success' : 'Failure'}, Actual ${completion.actual_success ? 'Success' : 'Failure'}`}
+                              >
+                                <div className={`w-3 h-3 ${colors[completion.task_id]} rounded-full shadow-md ${borderColors[completion.task_id]} border-2`}>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Detailed Results - Averages with Expandable Individual Results */}
+                      <div className="text-sm space-y-2">
+                        {['A', 'B', 'C'].map(taskId => {
+                          const taskStat = stats.taskStats[taskId];
+                          if (!taskStat) return null;
+
+                          const taskCompletions = rawData?.taskCompletions?.filter(tc => tc.task_id === taskId) || [];
+                          const isExpanded = expandedTasks[taskId];
+
+                          return (
+                            <div
+                              key={taskId}
+                              className="border-t border-gray-200 py-2"
+                              onMouseEnter={() => setHoveredTask(taskId)}
+                              onMouseLeave={() => setHoveredTask(null)}
+                            >
+                              {/* Average Row */}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => setExpandedTasks(prev => ({ ...prev, [taskId]: !prev[taskId] }))}
+                                    className="text-gray-600 hover:text-gray-900"
+                                    aria-label={isExpanded ? 'Collapse' : 'Expand'}
+                                  >
+                                    <svg
+                                      className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                  </button>
+                                  <span className="font-medium text-gray-900">Task {taskId} (Average)</span>
+                                </div>
+                                <div className="flex gap-6 text-sm">
+                                  <div>
+                                    <span className="text-gray-600">Self-Reported: </span>
+                                    <span className="font-medium">{taskStat.selfReportedSuccessRate}%</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-600">Actual: </span>
+                                    <span className="font-medium">{taskStat.actualSuccessRate}%</span>
+                                  </div>
+                                  <div>
+                                    <span className="text-gray-600">({taskStat.totalAttempts} completions)</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Individual Participant Details */}
+                              {isExpanded && taskCompletions.length > 0 && (
+                                <div className="mt-2 ml-6 space-y-2">
+                                  {taskCompletions.map((completion, idx) => (
+                                    <div key={`${completion.session_id}-${idx}`} className="flex items-center justify-between text-xs bg-gray-50 p-2 rounded">
+                                      <span className="text-gray-600">Participant {idx + 1}</span>
+                                      <div className="flex gap-4">
+                                        <div>
+                                          <span className="text-gray-600">Self-Reported: </span>
+                                          <span className={completion.self_reported_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                            {completion.self_reported_success ? 'Success' : 'Failure'}
+                                          </span>
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">Actual: </span>
+                                          <span className={completion.actual_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                            {completion.actual_success ? 'Success' : 'Failure'}
+                                          </span>
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">Time: </span>
+                                          <span className="font-medium">{completion.time_spent_seconds}s</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-600">Difficulty: </span>
+                                          <span className="font-medium">{completion.difficulty_rating}/5</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
 
