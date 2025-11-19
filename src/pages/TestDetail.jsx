@@ -395,35 +395,12 @@ const TestDetail = () => {
                       {/* Color Legend */}
                       <div className="flex items-center justify-center gap-6 text-sm mb-6">
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-blue-600"></div>
-                            <div className="w-3 h-3 bg-blue-200 rounded-full border-2 border-blue-600"></div>
-                          </div>
-                          <span className="text-gray-700">Task A</span>
+                          <div className="w-3 h-3 bg-gray-700 rounded-full"></div>
+                          <span className="text-gray-600">Success</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 bg-orange-600 rounded-full border-2 border-orange-600"></div>
-                            <div className="w-3 h-3 bg-orange-200 rounded-full border-2 border-orange-600"></div>
-                          </div>
-                          <span className="text-gray-700">Task B</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1">
-                            <div className="w-3 h-3 bg-purple-600 rounded-full border-2 border-purple-600"></div>
-                            <div className="w-3 h-3 bg-purple-200 rounded-full border-2 border-purple-600"></div>
-                          </div>
-                          <span className="text-gray-700">Task C</span>
-                        </div>
-                        <div className="border-l border-gray-300 pl-6 flex items-center gap-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-gray-700 rounded-full"></div>
-                            <span className="text-gray-600 text-xs">Success</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 bg-gray-200 rounded-full border border-gray-300"></div>
-                            <span className="text-gray-600 text-xs">Failure</span>
-                          </div>
+                          <div className="w-3 h-3 bg-gray-200 rounded-full border border-gray-300"></div>
+                          <span className="text-gray-600">Failure</span>
                         </div>
                       </div>
 
@@ -460,6 +437,7 @@ const TestDetail = () => {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                   </button>
+                                  <div className={`w-3 h-3 rounded-full ${taskId === 'A' ? 'bg-blue-600' : taskId === 'B' ? 'bg-orange-600' : 'bg-purple-600'}`}></div>
                                   <span className="font-medium text-gray-900">Task {taskId} (Average)</span>
                                 </div>
                                 <div className="flex gap-6 text-sm">
