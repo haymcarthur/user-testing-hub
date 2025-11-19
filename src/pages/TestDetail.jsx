@@ -293,10 +293,10 @@ const TestDetail = () => {
                         {/* Inner graph area */}
                         <div className="relative w-full h-full overflow-visible">
                           {/* Quadrant backgrounds */}
-                          <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-red-50"></div>
-                          <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-green-50"></div>
+                          <div className="absolute top-0 left-0 w-1/2 h-1/2 bg-green-50"></div>
+                          <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-red-50"></div>
                           <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-yellow-50"></div>
-                          <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-blue-50"></div>
+                          <div className="absolute bottom-0 right-0 w-1/2 h-1/2 bg-orange-50"></div>
 
                           {/* Grid lines */}
                           <div className="absolute top-0 left-1/2 w-px h-full bg-gray-300"></div>
@@ -389,6 +389,41 @@ const TestDetail = () => {
                               );
                             });
                           })()}
+                        </div>
+                      </div>
+
+                      {/* Color Legend */}
+                      <div className="flex items-center justify-center gap-6 text-sm mb-6">
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 bg-blue-600 rounded-full border-2 border-blue-600"></div>
+                            <div className="w-3 h-3 bg-blue-200 rounded-full border-2 border-blue-600"></div>
+                          </div>
+                          <span className="text-gray-700">Task A</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 bg-orange-600 rounded-full border-2 border-orange-600"></div>
+                            <div className="w-3 h-3 bg-orange-200 rounded-full border-2 border-orange-600"></div>
+                          </div>
+                          <span className="text-gray-700">Task B</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1">
+                            <div className="w-3 h-3 bg-purple-600 rounded-full border-2 border-purple-600"></div>
+                            <div className="w-3 h-3 bg-purple-200 rounded-full border-2 border-purple-600"></div>
+                          </div>
+                          <span className="text-gray-700">Task C</span>
+                        </div>
+                        <div className="border-l border-gray-300 pl-6 flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-gray-700 rounded-full"></div>
+                            <span className="text-gray-600 text-xs">Success</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 bg-gray-200 rounded-full border border-gray-300"></div>
+                            <span className="text-gray-600 text-xs">Failure</span>
+                          </div>
                         </div>
                       </div>
 
