@@ -274,20 +274,20 @@ const TestDetail = () => {
                       </div>
                     </div>
 
-                    {/* Success Quadrant Matrix */}
+                    {/* Time vs Difficulty Matrix */}
                     <div className="mb-6">
-                      <h4 className="text-sm font-medium text-gray-700 mb-3">Success Comparison</h4>
+                      <h4 className="text-sm font-medium text-gray-700 mb-3">Time vs Difficulty Analysis</h4>
 
                       {/* Scatter Plot Matrix */}
                       <div className="relative w-full h-96 border border-gray-300 rounded-lg bg-white p-6 mt-8 mb-12">
                         {/* Y-axis label */}
                         <div className="absolute left-0 top-1/2 -translate-y-1/2 -rotate-90 origin-center text-xs font-medium text-gray-600 whitespace-nowrap" style={{ transformOrigin: 'center', left: '-90px' }}>
-                          Actual Success Rate (%)
+                          Difficulty Rating (1=Very Hard, 5=Very Easy)
                         </div>
 
                         {/* X-axis label */}
                         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-xs font-medium text-gray-600 whitespace-nowrap" style={{ bottom: '-30px' }}>
-                          Self-Reported Success Rate (%)
+                          Time Spent (seconds)
                         </div>
 
                         {/* Inner graph area */}
@@ -304,72 +304,91 @@ const TestDetail = () => {
 
                           {/* Quadrant labels */}
                           <div className="absolute top-2 left-2 text-xs font-medium text-gray-500">
-                            High Confidence<br/>Low Success
+                            Quick<br/>Easy
                           </div>
                           <div className="absolute top-2 right-2 text-xs font-medium text-gray-500 text-right">
-                            High Confidence<br/>High Success
+                            Slow<br/>Easy
                           </div>
                           <div className="absolute bottom-2 left-2 text-xs font-medium text-gray-500">
-                            Low Confidence<br/>Low Success
+                            Quick<br/>Hard
                           </div>
                           <div className="absolute bottom-2 right-2 text-xs font-medium text-gray-500 text-right">
-                            Low Confidence<br/>High Success
+                            Slow<br/>Hard
                           </div>
 
-                          {/* Axis labels */}
-                          <div className="absolute -bottom-6 left-0 text-xs text-gray-500">0%</div>
-                          <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-gray-500">50%</div>
-                          <div className="absolute -bottom-6 right-0 text-xs text-gray-500">100%</div>
-                          <div className="absolute -top-5 -left-8 text-xs text-gray-500">100%</div>
-                          <div className="absolute top-1/2 -translate-y-1/2 -left-8 text-xs text-gray-500">50%</div>
-                          <div className="absolute bottom-0 -left-8 text-xs text-gray-500">0%</div>
-
-                          {/* Plot points - Individual Results */}
-                          {rawData && rawData.taskCompletions && rawData.taskCompletions.map((completion, index) => {
-                            // Get validation data for this completion to use actual percentages
-                            const validationData = rawData.validationData?.find(
-                              v => v.session_id === completion.session_id && v.task_id === completion.task_id
-                            );
-
-                            // Use actual completion percentages from validation data
-                            const actualCompletionPercent = validationData?.validation_data?.completionPercentage || 0;
-                            const selfReportedPercent = completion.self_reported_success ? 100 : 0;
-
-                            const x = selfReportedPercent;
-                            const y = 100 - actualCompletionPercent; // Invert for CSS positioning
-
-                            const colors = {
-                              A: 'bg-blue-600',
-                              B: 'bg-orange-600',
-                              C: 'bg-purple-600'
-                            };
-
-                            const borderColors = {
-                              A: 'border-blue-600',
-                              B: 'border-orange-600',
-                              C: 'border-purple-600'
-                            };
-
-                            // Show dot only if no task is hovered OR if this dot's task matches the hovered task
-                            const isVisible = !hoveredTask || hoveredTask === completion.task_id;
+                          {/* Axis labels - Dynamic based on data */}
+                          {(() => {
+                            const allTimes = rawData?.taskCompletions?.map(c => c.time_spent_seconds) || [];
+                            const minTime = Math.min(...allTimes, 0);
+                            const maxTime = Math.max(...allTimes, 300);
+                            const midTime = Math.round((minTime + maxTime) / 2);
 
                             return (
-                              <div
-                                key={`${completion.session_id}-${completion.task_id}-${index}`}
-                                className="absolute transition-opacity duration-200"
-                                style={{
-                                  left: `${x}%`,
-                                  top: `${y}%`,
-                                  transform: 'translate(-50%, -50%)',
-                                  opacity: isVisible ? 1 : 0
-                                }}
-                                title={`Task ${completion.task_id}: Self-reported ${completion.self_reported_success ? 'Success' : 'Failure'}, Actual ${actualCompletionPercent}% completion`}
-                              >
-                                <div className={`w-3 h-3 ${colors[completion.task_id]} rounded-full shadow-md ${borderColors[completion.task_id]} border-2`}>
-                                </div>
-                              </div>
+                              <>
+                                <div className="absolute -bottom-6 left-0 text-xs text-gray-500">{minTime}s</div>
+                                <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-gray-500">{midTime}s</div>
+                                <div className="absolute -bottom-6 right-0 text-xs text-gray-500">{maxTime}s</div>
+                              </>
                             );
-                          })}
+                          })()}
+                          <div className="absolute -top-5 -left-8 text-xs text-gray-500">5</div>
+                          <div className="absolute top-1/2 -translate-y-1/2 -left-8 text-xs text-gray-500">3</div>
+                          <div className="absolute bottom-0 -left-8 text-xs text-gray-500">1</div>
+
+                          {/* Plot points - Individual Results */}
+                          {rawData && rawData.taskCompletions && (() => {
+                            const allTimes = rawData.taskCompletions.map(c => c.time_spent_seconds);
+                            const minTime = Math.min(...allTimes, 0);
+                            const maxTime = Math.max(...allTimes, 300);
+                            const timeRange = maxTime - minTime || 1;
+
+                            return rawData.taskCompletions.map((completion, index) => {
+                              // Calculate position based on time (X) and difficulty (Y)
+                              const timeSpent = completion.time_spent_seconds;
+                              const difficulty = completion.difficulty_rating; // 1-5 scale
+
+                              // X-axis: Time spent (normalized to 0-100%)
+                              const x = ((timeSpent - minTime) / timeRange) * 100;
+
+                              // Y-axis: Difficulty rating (inverted so 5 is at top, 1 is at bottom)
+                              // Map 1-5 to 100-0% (CSS positioning)
+                              const y = ((5 - difficulty) / 4) * 100;
+
+                              // Task colors for borders
+                              const borderColors = {
+                                A: 'border-blue-600',
+                                B: 'border-orange-600',
+                                C: 'border-purple-600'
+                              };
+
+                              // Success/failure colors for fill
+                              const taskColors = {
+                                A: completion.actual_success ? 'bg-blue-600' : 'bg-blue-200',
+                                B: completion.actual_success ? 'bg-orange-600' : 'bg-orange-200',
+                                C: completion.actual_success ? 'bg-purple-600' : 'bg-purple-200'
+                              };
+
+                              // Show dot only if no task is hovered OR if this dot's task matches the hovered task
+                              const isVisible = !hoveredTask || hoveredTask === completion.task_id;
+
+                              return (
+                                <div
+                                  key={`${completion.session_id}-${completion.task_id}-${index}`}
+                                  className="absolute transition-opacity duration-200"
+                                  style={{
+                                    left: `${x}%`,
+                                    top: `${y}%`,
+                                    transform: 'translate(-50%, -50%)',
+                                    opacity: isVisible ? 1 : 0
+                                  }}
+                                  title={`Task ${completion.task_id}: ${timeSpent}s, Difficulty ${difficulty}/5, ${completion.actual_success ? 'Success' : 'Failure'}`}
+                                >
+                                  <div className={`w-3 h-3 ${taskColors[completion.task_id]} rounded-full shadow-md ${borderColors[completion.task_id]} border-2`}>
+                                  </div>
+                                </div>
+                              );
+                            });
+                          })()}
                         </div>
                       </div>
 
