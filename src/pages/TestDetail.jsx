@@ -326,9 +326,17 @@ const TestDetail = () => {
 
                           {/* Plot points - Individual Results */}
                           {rawData && rawData.taskCompletions && rawData.taskCompletions.map((completion, index) => {
-                            // Convert boolean to percentage
-                            const x = completion.self_reported_success ? 100 : 0;
-                            const y = 100 - (completion.actual_success ? 100 : 0); // Invert for CSS positioning
+                            // Get validation data for this completion to use actual percentages
+                            const validationData = rawData.validationData?.find(
+                              v => v.session_id === completion.session_id && v.task_id === completion.task_id
+                            );
+
+                            // Use actual completion percentages from validation data
+                            const actualCompletionPercent = validationData?.validation_data?.completionPercentage || 0;
+                            const selfReportedPercent = completion.self_reported_success ? 100 : 0;
+
+                            const x = selfReportedPercent;
+                            const y = 100 - actualCompletionPercent; // Invert for CSS positioning
 
                             const colors = {
                               A: 'bg-blue-600',
@@ -355,7 +363,7 @@ const TestDetail = () => {
                                   transform: 'translate(-50%, -50%)',
                                   opacity: isVisible ? 1 : 0
                                 }}
-                                title={`Task ${completion.task_id}: Self-reported ${completion.self_reported_success ? 'Success' : 'Failure'}, Actual ${completion.actual_success ? 'Success' : 'Failure'}`}
+                                title={`Task ${completion.task_id}: Self-reported ${completion.self_reported_success ? 'Success' : 'Failure'}, Actual ${actualCompletionPercent}% completion`}
                               >
                                 <div className={`w-3 h-3 ${colors[completion.task_id]} rounded-full shadow-md ${borderColors[completion.task_id]} border-2`}>
                                 </div>
