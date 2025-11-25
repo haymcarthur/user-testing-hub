@@ -1,0 +1,1963 @@
+{
+  "testId": "highlights",
+  "backupDate": "2025-11-20T23:46:48.399Z",
+  "data": {
+    "sessions": [
+      {
+        "id": "5ad7ca46-8583-44a1-b93c-7ee95c5e28f2",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T06:48:05.229+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T06:48:06.328285+00:00"
+      },
+      {
+        "id": "d10235b2-acab-4c52-8cd5-b86a317a4319",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T07:25:05.975+00:00",
+        "completed_at": "2025-11-19T07:39:10.156+00:00",
+        "created_at": "2025-11-19T07:25:06.129158+00:00"
+      },
+      {
+        "id": "e0051971-005d-4c00-b2ae-4867eca6a232",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T14:21:34.236+00:00",
+        "completed_at": "2025-11-19T14:36:16.211+00:00",
+        "created_at": "2025-11-19T14:21:34.580177+00:00"
+      },
+      {
+        "id": "09820f57-832d-4201-be89-4a78bc5faac8",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T14:42:05.969+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T14:42:06.685366+00:00"
+      },
+      {
+        "id": "cfa0f62b-07fb-418b-9ffe-7d70bca04144",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T14:32:31.388+00:00",
+        "completed_at": "2025-11-19T14:45:19.791+00:00",
+        "created_at": "2025-11-19T14:32:31.871733+00:00"
+      },
+      {
+        "id": "b2e445cc-673e-48ad-be61-9056f870b7bf",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T14:40:23.649+00:00",
+        "completed_at": "2025-11-19T14:49:34.441+00:00",
+        "created_at": "2025-11-19T14:40:23.047321+00:00"
+      },
+      {
+        "id": "eff82b5b-192d-402c-92da-a47cca251abf",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T14:41:27.477+00:00",
+        "completed_at": "2025-11-19T15:01:41.805+00:00",
+        "created_at": "2025-11-19T14:41:28.041927+00:00"
+      },
+      {
+        "id": "96f86616-30a8-4a17-bb02-4d1f2841b6e1",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T15:39:59.703+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T15:40:00.656267+00:00"
+      },
+      {
+        "id": "1059b2c5-2a97-4df1-881d-286203bdfb0d",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T15:52:55.698+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T15:52:56.250499+00:00"
+      },
+      {
+        "id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T15:40:59.393+00:00",
+        "completed_at": "2025-11-19T15:56:52.202+00:00",
+        "created_at": "2025-11-19T15:40:59.892832+00:00"
+      },
+      {
+        "id": "9de888ee-bbec-4dcd-8f8f-5cd4a3ff5066",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T15:59:06.443+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T15:59:07.095494+00:00"
+      },
+      {
+        "id": "4608f5d4-2cfb-40de-a628-b7592db2cd16",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T15:42:46.427+00:00",
+        "completed_at": "2025-11-19T16:00:19.38+00:00",
+        "created_at": "2025-11-19T15:42:47.215667+00:00"
+      },
+      {
+        "id": "7541742c-caf0-4274-99c4-bffc91085adb",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T15:56:11.71+00:00",
+        "completed_at": "2025-11-19T16:02:15.06+00:00",
+        "created_at": "2025-11-19T15:56:12.072634+00:00"
+      },
+      {
+        "id": "acd90279-41d3-4cd6-978c-aeaeaa65622a",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T15:46:27.51+00:00",
+        "completed_at": "2025-11-19T16:02:43.223+00:00",
+        "created_at": "2025-11-19T15:46:28.07609+00:00"
+      },
+      {
+        "id": "798eae8c-cf27-49f0-9e0e-0d3d6d427cfa",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T16:04:33.181+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T16:04:32.828399+00:00"
+      },
+      {
+        "id": "398b4974-135c-4411-b33b-b3ffc9895be9",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T15:48:03.895+00:00",
+        "completed_at": "2025-11-19T16:09:02.721+00:00",
+        "created_at": "2025-11-19T15:48:05.237189+00:00"
+      },
+      {
+        "id": "2d3efb54-9820-408d-9f5e-dd78952760af",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T16:11:07.21+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T16:11:07.665814+00:00"
+      },
+      {
+        "id": "fdfc5952-290c-4b59-beca-86b16318f3ce",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T16:09:04.414+00:00",
+        "completed_at": "2025-11-19T16:20:41.95+00:00",
+        "created_at": "2025-11-19T16:09:05.368713+00:00"
+      },
+      {
+        "id": "f66b8476-9909-4877-bfd8-143a4c8cc083",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T16:26:12.291+00:00",
+        "completed_at": "2025-11-19T16:48:01.507+00:00",
+        "created_at": "2025-11-19T16:26:15.18084+00:00"
+      },
+      {
+        "id": "913e6a64-a6ab-4099-9a36-de19a606b3d0",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T17:16:01.04+00:00",
+        "completed_at": "2025-11-19T17:25:20.097+00:00",
+        "created_at": "2025-11-19T17:16:01.938918+00:00"
+      },
+      {
+        "id": "de72ef27-65cb-4178-852c-de8090ac5e99",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T17:29:23.499+00:00",
+        "completed_at": "2025-11-19T17:43:15.256+00:00",
+        "created_at": "2025-11-19T17:29:24.021419+00:00"
+      },
+      {
+        "id": "895a3253-5b87-4398-9931-5bf9fc70a5f4",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T19:33:35.339+00:00",
+        "completed_at": "2025-11-19T19:45:21.075+00:00",
+        "created_at": "2025-11-19T19:33:36.468007+00:00"
+      },
+      {
+        "id": "7c2900ed-44ea-4a3f-a485-dea5677ed1e4",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T19:45:42.451+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T19:45:43.051138+00:00"
+      },
+      {
+        "id": "bd91c581-022c-434b-900c-6be71b8dda78",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T19:51:32.35+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T19:51:33.330972+00:00"
+      },
+      {
+        "id": "b3f57583-8374-45bc-92ab-0c84b00fca98",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T19:52:48.724+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T19:52:49.225247+00:00"
+      },
+      {
+        "id": "bce30916-2f86-4d2c-8428-5d4deaf28a55",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T19:57:11.772+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T19:57:12.609205+00:00"
+      },
+      {
+        "id": "1c322361-89b7-408e-b891-6ba367038131",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T19:57:59.899+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T19:58:01.357369+00:00"
+      },
+      {
+        "id": "07e98986-2b95-4243-9b8f-e0d7bec8833b",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T20:03:01.025+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-19T20:03:01.700099+00:00"
+      },
+      {
+        "id": "b20f9c2d-cef1-45e6-b512-7588208cd26a",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T19:50:26.047+00:00",
+        "completed_at": "2025-11-19T20:08:09.42+00:00",
+        "created_at": "2025-11-19T19:50:26.613157+00:00"
+      },
+      {
+        "id": "190c1e3c-1f6d-4d76-904e-6ecd5aae5a69",
+        "test_id": "highlights",
+        "started_at": "2025-11-19T20:06:04.329+00:00",
+        "completed_at": "2025-11-19T20:13:45.96+00:00",
+        "created_at": "2025-11-19T20:06:04.391739+00:00"
+      },
+      {
+        "id": "52f39801-f229-4b4e-9be0-604114726b9d",
+        "test_id": "highlights",
+        "started_at": "2025-11-20T16:57:13.266+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-20T16:57:13.701493+00:00"
+      },
+      {
+        "id": "b3b95451-8192-4db4-8289-3f3848f52a79",
+        "test_id": "highlights",
+        "started_at": "2025-11-20T17:01:11.849+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-20T17:01:12.397441+00:00"
+      },
+      {
+        "id": "8793f16a-47dd-4742-ac74-85a10fe1163a",
+        "test_id": "highlights",
+        "started_at": "2025-11-20T17:02:53.28+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-20T17:02:53.693793+00:00"
+      },
+      {
+        "id": "68d82fc5-00d7-41f0-acbc-1937e1a50669",
+        "test_id": "highlights",
+        "started_at": "2025-11-20T17:06:31.071+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-20T17:06:31.612926+00:00"
+      },
+      {
+        "id": "67cfa659-bcfb-4fc5-9d8a-51bbb6ddf97b",
+        "test_id": "highlights",
+        "started_at": "2025-11-20T17:27:01.307+00:00",
+        "completed_at": null,
+        "created_at": "2025-11-20T17:27:01.521558+00:00"
+      },
+      {
+        "id": "8df947cb-710c-4473-b32d-6b4e340ac545",
+        "test_id": "highlights",
+        "started_at": "2025-11-20T17:32:56.739+00:00",
+        "completed_at": "2025-11-20T17:36:03.658+00:00",
+        "created_at": "2025-11-20T17:32:57.000303+00:00"
+      },
+      {
+        "id": "111b1590-23c0-4dc3-afea-c1d0a6e65822",
+        "test_id": "highlights",
+        "started_at": "2025-11-20T17:39:47.768+00:00",
+        "completed_at": "2025-11-20T17:47:45.116+00:00",
+        "created_at": "2025-11-20T17:39:48.217612+00:00"
+      },
+      {
+        "id": "52f97d96-fd59-44d4-9746-9a2e0e62d487",
+        "test_id": "highlights",
+        "started_at": "2025-11-20T17:43:58.249+00:00",
+        "completed_at": "2025-11-20T18:00:27.538+00:00",
+        "created_at": "2025-11-20T17:43:56.013673+00:00"
+      }
+    ],
+    "taskCompletions": [
+      {
+        "id": "e732e511-43dd-493e-b814-aa7f8943e7e7",
+        "session_id": "d10235b2-acab-4c52-8cd5-b86a317a4319",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 375,
+        "started_at": "2025-11-19T07:25:06.319+00:00",
+        "completed_at": "2025-11-19T07:31:21.444+00:00",
+        "created_at": "2025-11-19T07:31:22.223814+00:00"
+      },
+      {
+        "id": "cf4d14d6-e31f-475e-8bbe-21202659c251",
+        "session_id": "d10235b2-acab-4c52-8cd5-b86a317a4319",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 220,
+        "started_at": "2025-11-19T07:31:22.908+00:00",
+        "completed_at": "2025-11-19T07:35:02.678+00:00",
+        "created_at": "2025-11-19T07:35:03.283735+00:00"
+      },
+      {
+        "id": "7b40a737-8bad-4ab2-8b4f-c93416bffa22",
+        "session_id": "e0051971-005d-4c00-b2ae-4867eca6a232",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 1,
+        "actual_success": true,
+        "time_spent_seconds": 510,
+        "started_at": "2025-11-19T14:21:34.595+00:00",
+        "completed_at": "2025-11-19T14:30:04.996+00:00",
+        "created_at": "2025-11-19T14:30:05.318153+00:00"
+      },
+      {
+        "id": "c4d8ec33-714b-4a80-87df-e03936d13d9d",
+        "session_id": "e0051971-005d-4c00-b2ae-4867eca6a232",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 2,
+        "actual_success": true,
+        "time_spent_seconds": 218,
+        "started_at": "2025-11-19T14:30:05.475+00:00",
+        "completed_at": "2025-11-19T14:33:43.598+00:00",
+        "created_at": "2025-11-19T14:33:43.937729+00:00"
+      },
+      {
+        "id": "7f5baacd-a8bd-4711-89e0-dff6ddaf2e87",
+        "session_id": "cfa0f62b-07fb-418b-9ffe-7d70bca04144",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 477,
+        "started_at": "2025-11-19T14:32:31.937+00:00",
+        "completed_at": "2025-11-19T14:40:29.021+00:00",
+        "created_at": "2025-11-19T14:40:29.490448+00:00"
+      },
+      {
+        "id": "70a92f32-7781-4473-87a0-368147ca30da",
+        "session_id": "cfa0f62b-07fb-418b-9ffe-7d70bca04144",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 119,
+        "started_at": "2025-11-19T14:40:29.703+00:00",
+        "completed_at": "2025-11-19T14:42:29.036+00:00",
+        "created_at": "2025-11-19T14:42:29.507386+00:00"
+      },
+      {
+        "id": "a6fd03b5-62fd-49cd-9213-431696efc62c",
+        "session_id": "b2e445cc-673e-48ad-be61-9056f870b7bf",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": false,
+        "time_spent_seconds": 341,
+        "started_at": "2025-11-19T14:40:23.961+00:00",
+        "completed_at": "2025-11-19T14:46:04.515+00:00",
+        "created_at": "2025-11-19T14:46:03.928308+00:00"
+      },
+      {
+        "id": "9c43b76b-326a-4bd6-8915-b7ffae4c4b71",
+        "session_id": "b2e445cc-673e-48ad-be61-9056f870b7bf",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 111,
+        "started_at": "2025-11-19T14:46:05.118+00:00",
+        "completed_at": "2025-11-19T14:47:56.539+00:00",
+        "created_at": "2025-11-19T14:47:55.896204+00:00"
+      },
+      {
+        "id": "9ef155b9-e734-4c16-853d-45caf31829e4",
+        "session_id": "eff82b5b-192d-402c-92da-a47cca251abf",
+        "task_id": "A",
+        "self_reported_success": false,
+        "difficulty_rating": 1,
+        "actual_success": true,
+        "time_spent_seconds": 801,
+        "started_at": "2025-11-19T14:41:28.065+00:00",
+        "completed_at": "2025-11-19T14:54:48.645+00:00",
+        "created_at": "2025-11-19T14:54:48.782011+00:00"
+      },
+      {
+        "id": "8fdd64dd-7f40-4fdd-9b19-38556de3cefc",
+        "session_id": "eff82b5b-192d-402c-92da-a47cca251abf",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 290,
+        "started_at": "2025-11-19T14:54:49.001+00:00",
+        "completed_at": "2025-11-19T14:59:39.464+00:00",
+        "created_at": "2025-11-19T14:59:39.777715+00:00"
+      },
+      {
+        "id": "60e689ce-f352-461e-8185-8cc50f80f0e4",
+        "session_id": "96f86616-30a8-4a17-bb02-4d1f2841b6e1",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": false,
+        "time_spent_seconds": 279,
+        "started_at": "2025-11-19T15:40:01.455+00:00",
+        "completed_at": "2025-11-19T15:44:39.989+00:00",
+        "created_at": "2025-11-19T15:44:39.777472+00:00"
+      },
+      {
+        "id": "a1b20e62-149c-44f6-8ff9-ac2ec152a8c3",
+        "session_id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 398,
+        "started_at": "2025-11-19T15:40:59.982+00:00",
+        "completed_at": "2025-11-19T15:47:37.85+00:00",
+        "created_at": "2025-11-19T15:47:38.50552+00:00"
+      },
+      {
+        "id": "222a6971-47d6-4517-98b2-a83024897b08",
+        "session_id": "4608f5d4-2cfb-40de-a628-b7592db2cd16",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 3,
+        "actual_success": false,
+        "time_spent_seconds": 315,
+        "started_at": "2025-11-19T15:42:47.288+00:00",
+        "completed_at": "2025-11-19T15:48:02.09+00:00",
+        "created_at": "2025-11-19T15:48:02.230207+00:00"
+      },
+      {
+        "id": "f33d7f4a-2937-45a4-8fd4-1ffdde7e1312",
+        "session_id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 3,
+        "actual_success": true,
+        "time_spent_seconds": 319,
+        "started_at": "2025-11-19T15:47:38.852+00:00",
+        "completed_at": "2025-11-19T15:52:57.969+00:00",
+        "created_at": "2025-11-19T15:52:58.121434+00:00"
+      },
+      {
+        "id": "a1a11182-6624-47f4-88d6-85dd37274eb6",
+        "session_id": "acd90279-41d3-4cd6-978c-aeaeaa65622a",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 473,
+        "started_at": "2025-11-19T15:46:28.766+00:00",
+        "completed_at": "2025-11-19T15:54:21.692+00:00",
+        "created_at": "2025-11-19T15:54:22.114467+00:00"
+      },
+      {
+        "id": "1fdcc4fb-06b5-4331-903b-6f0c510f140f",
+        "session_id": "4608f5d4-2cfb-40de-a628-b7592db2cd16",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 3,
+        "actual_success": false,
+        "time_spent_seconds": 450,
+        "started_at": "2025-11-19T15:48:02.462+00:00",
+        "completed_at": "2025-11-19T15:55:32.468+00:00",
+        "created_at": "2025-11-19T15:55:32.777597+00:00"
+      },
+      {
+        "id": "3c9efdef-9766-41a5-82c3-5d5953d9a66a",
+        "session_id": "7541742c-caf0-4274-99c4-bffc91085adb",
+        "task_id": "A",
+        "self_reported_success": false,
+        "difficulty_rating": 1,
+        "actual_success": false,
+        "time_spent_seconds": 105,
+        "started_at": "2025-11-19T15:56:12.057+00:00",
+        "completed_at": "2025-11-19T15:57:56.928+00:00",
+        "created_at": "2025-11-19T15:57:57.311865+00:00"
+      },
+      {
+        "id": "30001bf6-12ca-412f-827e-2a766f68aba9",
+        "session_id": "398b4974-135c-4411-b33b-b3ffc9895be9",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 2,
+        "actual_success": true,
+        "time_spent_seconds": 665,
+        "started_at": "2025-11-19T15:48:04.509+00:00",
+        "completed_at": "2025-11-19T15:59:09.172+00:00",
+        "created_at": "2025-11-19T15:59:10.498574+00:00"
+      },
+      {
+        "id": "6012cae2-de28-4f09-b615-acad442e7028",
+        "session_id": "acd90279-41d3-4cd6-978c-aeaeaa65622a",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 293,
+        "started_at": "2025-11-19T15:54:23.159+00:00",
+        "completed_at": "2025-11-19T15:59:16.556+00:00",
+        "created_at": "2025-11-19T15:59:16.116066+00:00"
+      },
+      {
+        "id": "9adc8080-480e-4dfd-aad5-43ecf5c06cde",
+        "session_id": "7541742c-caf0-4274-99c4-bffc91085adb",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 145,
+        "started_at": "2025-11-19T15:57:57.413+00:00",
+        "completed_at": "2025-11-19T16:00:22.095+00:00",
+        "created_at": "2025-11-19T16:00:22.452151+00:00"
+      },
+      {
+        "id": "2dceca9d-52d5-47bd-952f-5802c12aa223",
+        "session_id": "9de888ee-bbec-4dcd-8f8f-5cd4a3ff5066",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": false,
+        "time_spent_seconds": 165,
+        "started_at": "2025-11-19T15:59:06.9+00:00",
+        "completed_at": "2025-11-19T16:01:52.128+00:00",
+        "created_at": "2025-11-19T16:01:52.809354+00:00"
+      },
+      {
+        "id": "a8fc5f08-971a-41c9-a438-d5ade6903268",
+        "session_id": "398b4974-135c-4411-b33b-b3ffc9895be9",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 350,
+        "started_at": "2025-11-19T15:59:10.003+00:00",
+        "completed_at": "2025-11-19T16:05:00.378+00:00",
+        "created_at": "2025-11-19T16:05:01.652274+00:00"
+      },
+      {
+        "id": "5b573f4e-7e08-483e-b416-432225168393",
+        "session_id": "fdfc5952-290c-4b59-beca-86b16318f3ce",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 420,
+        "started_at": "2025-11-19T16:09:04.874+00:00",
+        "completed_at": "2025-11-19T16:16:04.5+00:00",
+        "created_at": "2025-11-19T16:16:05.417261+00:00"
+      },
+      {
+        "id": "7d1ee7ca-1dc8-4c4a-9574-7d792ca548d0",
+        "session_id": "fdfc5952-290c-4b59-beca-86b16318f3ce",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 132,
+        "started_at": "2025-11-19T16:16:05.194+00:00",
+        "completed_at": "2025-11-19T16:18:17.071+00:00",
+        "created_at": "2025-11-19T16:18:17.924298+00:00"
+      },
+      {
+        "id": "41a6c484-5168-47a0-bec3-3f5cb704336d",
+        "session_id": "f66b8476-9909-4877-bfd8-143a4c8cc083",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": false,
+        "time_spent_seconds": 518,
+        "started_at": "2025-11-19T16:26:12.718+00:00",
+        "completed_at": "2025-11-19T16:34:50.796+00:00",
+        "created_at": "2025-11-19T16:34:53.651239+00:00"
+      },
+      {
+        "id": "08e04516-3d0c-4d2f-92cb-bd5fbc02614c",
+        "session_id": "f66b8476-9909-4877-bfd8-143a4c8cc083",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 387,
+        "started_at": "2025-11-19T16:34:51.252+00:00",
+        "completed_at": "2025-11-19T16:41:18.216+00:00",
+        "created_at": "2025-11-19T16:41:21.044093+00:00"
+      },
+      {
+        "id": "dc8eb755-5da1-4acf-958e-36966aa0591b",
+        "session_id": "913e6a64-a6ab-4099-9a36-de19a606b3d0",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 3,
+        "actual_success": true,
+        "time_spent_seconds": 244,
+        "started_at": "2025-11-19T17:16:02.633+00:00",
+        "completed_at": "2025-11-19T17:20:06.621+00:00",
+        "created_at": "2025-11-19T17:20:06.390341+00:00"
+      },
+      {
+        "id": "b990935f-ab5e-476c-bbf4-5e0f650dd8b0",
+        "session_id": "913e6a64-a6ab-4099-9a36-de19a606b3d0",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 150,
+        "started_at": "2025-11-19T17:20:07.422+00:00",
+        "completed_at": "2025-11-19T17:22:37.569+00:00",
+        "created_at": "2025-11-19T17:22:37.180188+00:00"
+      },
+      {
+        "id": "b75b9f46-8f65-48f6-8388-72c98ef3b6f9",
+        "session_id": "de72ef27-65cb-4178-852c-de8090ac5e99",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 2,
+        "actual_success": false,
+        "time_spent_seconds": 332,
+        "started_at": "2025-11-19T17:29:24.039+00:00",
+        "completed_at": "2025-11-19T17:34:56.165+00:00",
+        "created_at": "2025-11-19T17:34:56.555558+00:00"
+      },
+      {
+        "id": "8192cbfe-b08b-4899-b156-74f7b7311153",
+        "session_id": "de72ef27-65cb-4178-852c-de8090ac5e99",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 226,
+        "started_at": "2025-11-19T17:34:56.719+00:00",
+        "completed_at": "2025-11-19T17:38:42.87+00:00",
+        "created_at": "2025-11-19T17:38:43.160764+00:00"
+      },
+      {
+        "id": "769a6192-effb-4df3-9c24-7229b16a0b05",
+        "session_id": "895a3253-5b87-4398-9931-5bf9fc70a5f4",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 3,
+        "actual_success": true,
+        "time_spent_seconds": 409,
+        "started_at": "2025-11-19T19:33:36.394+00:00",
+        "completed_at": "2025-11-19T19:40:25.621+00:00",
+        "created_at": "2025-11-19T19:40:26.034296+00:00"
+      },
+      {
+        "id": "fcef8fa2-f550-486e-8d64-cd2b582a4817",
+        "session_id": "895a3253-5b87-4398-9931-5bf9fc70a5f4",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": false,
+        "time_spent_seconds": 132,
+        "started_at": "2025-11-19T19:40:26.134+00:00",
+        "completed_at": "2025-11-19T19:42:37.881+00:00",
+        "created_at": "2025-11-19T19:42:38.371914+00:00"
+      },
+      {
+        "id": "3a6fbbfc-127c-4709-a3cf-9af30fd6b614",
+        "session_id": "7c2900ed-44ea-4a3f-a485-dea5677ed1e4",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 3,
+        "actual_success": false,
+        "time_spent_seconds": 264,
+        "started_at": "2025-11-19T19:45:42.922+00:00",
+        "completed_at": "2025-11-19T19:50:06.662+00:00",
+        "created_at": "2025-11-19T19:50:07.126662+00:00"
+      },
+      {
+        "id": "4a40a159-dccb-45b7-aee6-a366685d4ef6",
+        "session_id": "b20f9c2d-cef1-45e6-b512-7588208cd26a",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 2,
+        "actual_success": false,
+        "time_spent_seconds": 432,
+        "started_at": "2025-11-19T19:50:26.799+00:00",
+        "completed_at": "2025-11-19T19:57:38.952+00:00",
+        "created_at": "2025-11-19T19:57:39.33567+00:00"
+      },
+      {
+        "id": "37820b6f-6672-4b1c-85a6-557bc563e50d",
+        "session_id": "bce30916-2f86-4d2c-8428-5d4deaf28a55",
+        "task_id": "A",
+        "self_reported_success": false,
+        "difficulty_rating": 2,
+        "actual_success": false,
+        "time_spent_seconds": 134,
+        "started_at": "2025-11-19T19:57:12.686+00:00",
+        "completed_at": "2025-11-19T19:59:26.397+00:00",
+        "created_at": "2025-11-19T19:59:27.251776+00:00"
+      },
+      {
+        "id": "b2760d27-e989-4c64-abf1-bc6f6725f8f9",
+        "session_id": "b20f9c2d-cef1-45e6-b512-7588208cd26a",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 3,
+        "actual_success": true,
+        "time_spent_seconds": 449,
+        "started_at": "2025-11-19T19:57:39.659+00:00",
+        "completed_at": "2025-11-19T20:05:08.176+00:00",
+        "created_at": "2025-11-19T20:05:08.327491+00:00"
+      },
+      {
+        "id": "ee4f41ab-95d9-4888-825f-0107fa59d070",
+        "session_id": "190c1e3c-1f6d-4d76-904e-6ecd5aae5a69",
+        "task_id": "A",
+        "self_reported_success": false,
+        "difficulty_rating": 3,
+        "actual_success": true,
+        "time_spent_seconds": 180,
+        "started_at": "2025-11-19T20:06:04.455+00:00",
+        "completed_at": "2025-11-19T20:09:04.396+00:00",
+        "created_at": "2025-11-19T20:09:04.466855+00:00"
+      },
+      {
+        "id": "4af774bb-cae5-455f-bec9-e3860842a205",
+        "session_id": "190c1e3c-1f6d-4d76-904e-6ecd5aae5a69",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 1,
+        "actual_success": true,
+        "time_spent_seconds": 120,
+        "started_at": "2025-11-19T20:09:04.68+00:00",
+        "completed_at": "2025-11-19T20:11:05.067+00:00",
+        "created_at": "2025-11-19T20:11:05.135304+00:00"
+      },
+      {
+        "id": "31af5ccf-d98e-4c17-8e9f-af130bbd83d5",
+        "session_id": "8df947cb-710c-4473-b32d-6b4e340ac545",
+        "task_id": "A",
+        "self_reported_success": false,
+        "difficulty_rating": 2,
+        "actual_success": false,
+        "time_spent_seconds": 8,
+        "started_at": "2025-11-20T17:32:57.041+00:00",
+        "completed_at": "2025-11-20T17:33:04.688+00:00",
+        "created_at": "2025-11-20T17:33:04.846191+00:00"
+      },
+      {
+        "id": "9c619be7-6144-40fa-884a-db68bbc78975",
+        "session_id": "8df947cb-710c-4473-b32d-6b4e340ac545",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 3,
+        "actual_success": true,
+        "time_spent_seconds": 99,
+        "started_at": "2025-11-20T17:33:05.116+00:00",
+        "completed_at": "2025-11-20T17:34:44.006+00:00",
+        "created_at": "2025-11-20T17:34:44.12529+00:00"
+      },
+      {
+        "id": "e25be028-69a0-4fd0-ae56-23204d52d042",
+        "session_id": "8df947cb-710c-4473-b32d-6b4e340ac545",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 59,
+        "started_at": "2025-11-20T17:34:44.368+00:00",
+        "completed_at": "2025-11-20T17:35:43.16+00:00",
+        "created_at": "2025-11-20T17:35:43.284581+00:00"
+      },
+      {
+        "id": "98ed9ac2-c768-428a-9046-c22e28b02ba2",
+        "session_id": "111b1590-23c0-4dc3-afea-c1d0a6e65822",
+        "task_id": "A",
+        "self_reported_success": false,
+        "difficulty_rating": 3,
+        "actual_success": false,
+        "time_spent_seconds": 225,
+        "started_at": "2025-11-20T17:39:48.28+00:00",
+        "completed_at": "2025-11-20T17:43:33.434+00:00",
+        "created_at": "2025-11-20T17:43:33.72343+00:00"
+      },
+      {
+        "id": "1b47b0c6-4de1-43cc-8854-87b87b0e487f",
+        "session_id": "111b1590-23c0-4dc3-afea-c1d0a6e65822",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": false,
+        "time_spent_seconds": 137,
+        "started_at": "2025-11-20T17:43:33.892+00:00",
+        "completed_at": "2025-11-20T17:45:50.814+00:00",
+        "created_at": "2025-11-20T17:45:51.218789+00:00"
+      },
+      {
+        "id": "4dac71a6-b4d6-4e72-8965-2b566122749e",
+        "session_id": "111b1590-23c0-4dc3-afea-c1d0a6e65822",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 88,
+        "started_at": "2025-11-20T17:45:51.427+00:00",
+        "completed_at": "2025-11-20T17:47:19.064+00:00",
+        "created_at": "2025-11-20T17:47:19.189601+00:00"
+      },
+      {
+        "id": "a9943509-aefe-495e-984a-6c4eb09b4691",
+        "session_id": "52f97d96-fd59-44d4-9746-9a2e0e62d487",
+        "task_id": "A",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 471,
+        "started_at": "2025-11-20T17:43:58.581+00:00",
+        "completed_at": "2025-11-20T17:51:49.521+00:00",
+        "created_at": "2025-11-20T17:51:47.180211+00:00"
+      },
+      {
+        "id": "a6fa9b6c-6a67-4ce7-a932-c2d4e18b506c",
+        "session_id": "52f97d96-fd59-44d4-9746-9a2e0e62d487",
+        "task_id": "B",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 262,
+        "started_at": "2025-11-20T17:51:49.933+00:00",
+        "completed_at": "2025-11-20T17:56:12.349+00:00",
+        "created_at": "2025-11-20T17:56:10.062684+00:00"
+      },
+      {
+        "id": "fc5573b6-ab99-4639-8bee-5a1545a00b48",
+        "session_id": "52f97d96-fd59-44d4-9746-9a2e0e62d487",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 130,
+        "started_at": "2025-11-20T17:56:12.758+00:00",
+        "completed_at": "2025-11-20T17:58:22.418+00:00",
+        "created_at": "2025-11-20T17:58:20.128583+00:00"
+      },
+      {
+        "id": "d7758d1e-2b0e-4003-b558-d5c950b5e642",
+        "session_id": "d10235b2-acab-4c52-8cd5-b86a317a4319",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 127,
+        "started_at": "2025-11-19T07:35:03.982+00:00",
+        "completed_at": "2025-11-19T07:37:10.749+00:00",
+        "created_at": "2025-11-19T07:37:11.326684+00:00"
+      },
+      {
+        "id": "360c249c-c9a1-43a4-a0d8-eddba153003d",
+        "session_id": "e0051971-005d-4c00-b2ae-4867eca6a232",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 102,
+        "started_at": "2025-11-19T14:33:44.074+00:00",
+        "completed_at": "2025-11-19T14:35:26.341+00:00",
+        "created_at": "2025-11-19T14:35:26.554362+00:00"
+      },
+      {
+        "id": "af45a490-c61e-4f75-8b02-cfbf27bbf178",
+        "session_id": "cfa0f62b-07fb-418b-9ffe-7d70bca04144",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 140,
+        "started_at": "2025-11-19T14:42:29.838+00:00",
+        "completed_at": "2025-11-19T14:44:50.269+00:00",
+        "created_at": "2025-11-19T14:44:50.733699+00:00"
+      },
+      {
+        "id": "4e04e265-cb1a-4c47-aec9-74290d06aa02",
+        "session_id": "b2e445cc-673e-48ad-be61-9056f870b7bf",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 68,
+        "started_at": "2025-11-19T14:47:56.951+00:00",
+        "completed_at": "2025-11-19T14:49:05.326+00:00",
+        "created_at": "2025-11-19T14:49:04.618114+00:00"
+      },
+      {
+        "id": "1bf63e16-3513-4890-b233-ee97119eb3d6",
+        "session_id": "eff82b5b-192d-402c-92da-a47cca251abf",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 89,
+        "started_at": "2025-11-19T14:59:39.888+00:00",
+        "completed_at": "2025-11-19T15:01:09.009+00:00",
+        "created_at": "2025-11-19T15:01:09.353562+00:00"
+      },
+      {
+        "id": "90e9c324-ec6e-4a89-a301-cb7b0a315d6a",
+        "session_id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 135,
+        "started_at": "2025-11-19T15:52:58.355+00:00",
+        "completed_at": "2025-11-19T15:55:13.448+00:00",
+        "created_at": "2025-11-19T15:55:13.633978+00:00"
+      },
+      {
+        "id": "7c54f4ad-f6b6-407a-a73f-0501a0651d20",
+        "session_id": "4608f5d4-2cfb-40de-a628-b7592db2cd16",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 172,
+        "started_at": "2025-11-19T15:55:32.91+00:00",
+        "completed_at": "2025-11-19T15:58:24.555+00:00",
+        "created_at": "2025-11-19T15:58:24.622601+00:00"
+      },
+      {
+        "id": "5b1add0a-1a02-4eb9-ba02-b77e60df3956",
+        "session_id": "7541742c-caf0-4274-99c4-bffc91085adb",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 94,
+        "started_at": "2025-11-19T16:00:22.52+00:00",
+        "completed_at": "2025-11-19T16:01:57.016+00:00",
+        "created_at": "2025-11-19T16:01:57.220115+00:00"
+      },
+      {
+        "id": "5cce7124-fef5-486e-8e61-0e7a89f0e550",
+        "session_id": "acd90279-41d3-4cd6-978c-aeaeaa65622a",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 166,
+        "started_at": "2025-11-19T15:59:16.973+00:00",
+        "completed_at": "2025-11-19T16:02:02.817+00:00",
+        "created_at": "2025-11-19T16:02:02.474869+00:00"
+      },
+      {
+        "id": "2938108d-3c88-4d5f-8f8a-c03befbf27b4",
+        "session_id": "398b4974-135c-4411-b33b-b3ffc9895be9",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 178,
+        "started_at": "2025-11-19T16:05:01.212+00:00",
+        "completed_at": "2025-11-19T16:07:58.832+00:00",
+        "created_at": "2025-11-19T16:08:00.119757+00:00"
+      },
+      {
+        "id": "36337f7e-6a86-4dcc-9ff7-eb1b4c499605",
+        "session_id": "fdfc5952-290c-4b59-beca-86b16318f3ce",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 89,
+        "started_at": "2025-11-19T16:18:17.496+00:00",
+        "completed_at": "2025-11-19T16:19:46.056+00:00",
+        "created_at": "2025-11-19T16:19:46.79288+00:00"
+      },
+      {
+        "id": "204610a2-9ab8-4b9b-ab6f-d5de020896b1",
+        "session_id": "f66b8476-9909-4877-bfd8-143a4c8cc083",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 266,
+        "started_at": "2025-11-19T16:41:18.663+00:00",
+        "completed_at": "2025-11-19T16:45:45.051+00:00",
+        "created_at": "2025-11-19T16:45:47.809397+00:00"
+      },
+      {
+        "id": "34e70e55-37c8-4ee6-b7bf-d56eb4037083",
+        "session_id": "913e6a64-a6ab-4099-9a36-de19a606b3d0",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 106,
+        "started_at": "2025-11-19T17:22:38.041+00:00",
+        "completed_at": "2025-11-19T17:24:23.941+00:00",
+        "created_at": "2025-11-19T17:24:23.600466+00:00"
+      },
+      {
+        "id": "d0117766-0e50-4068-a000-523d06996a9c",
+        "session_id": "de72ef27-65cb-4178-852c-de8090ac5e99",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 4,
+        "actual_success": true,
+        "time_spent_seconds": 237,
+        "started_at": "2025-11-19T17:38:43.271+00:00",
+        "completed_at": "2025-11-19T17:42:40.181+00:00",
+        "created_at": "2025-11-19T17:42:40.526868+00:00"
+      },
+      {
+        "id": "be5e4a23-b8bf-4c90-bd5b-1731993f25a4",
+        "session_id": "895a3253-5b87-4398-9931-5bf9fc70a5f4",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 134,
+        "started_at": "2025-11-19T19:42:38.408+00:00",
+        "completed_at": "2025-11-19T19:44:52.317+00:00",
+        "created_at": "2025-11-19T19:44:52.900482+00:00"
+      },
+      {
+        "id": "f7145f41-16c0-4438-9797-24690994b8d4",
+        "session_id": "b20f9c2d-cef1-45e6-b512-7588208cd26a",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 107,
+        "started_at": "2025-11-19T20:05:08.599+00:00",
+        "completed_at": "2025-11-19T20:06:55.431+00:00",
+        "created_at": "2025-11-19T20:06:55.62447+00:00"
+      },
+      {
+        "id": "6c08a356-0ab7-42b5-b618-13b347476dd9",
+        "session_id": "190c1e3c-1f6d-4d76-904e-6ecd5aae5a69",
+        "task_id": "C",
+        "self_reported_success": true,
+        "difficulty_rating": 5,
+        "actual_success": true,
+        "time_spent_seconds": 96,
+        "started_at": "2025-11-19T20:11:05.299+00:00",
+        "completed_at": "2025-11-19T20:12:41.192+00:00",
+        "created_at": "2025-11-19T20:12:41.889524+00:00"
+      }
+    ],
+    "surveyResponses": [
+      {
+        "id": "4fee8b90-24f3-49ff-9615-d9f8f62edfab",
+        "session_id": "d10235b2-acab-4c52-8cd5-b86a317a4319",
+        "preferred_method": "C",
+        "preference_reason": "It took less efforts to highlight each details by just highlighting each details one by one without the need to click on each field. It's very fast and much convenient compare to version A or B.",
+        "created_at": "2025-11-19T07:39:09.967061+00:00"
+      },
+      {
+        "id": "5f5c9e3a-1f39-4622-951a-628453da4984",
+        "session_id": "e0051971-005d-4c00-b2ae-4867eca6a232",
+        "preferred_method": "C",
+        "preference_reason": "It made no sense to require the user to manually click on each item before highlighting. Option C should be the only option. It is way more efficient and less confusing.",
+        "created_at": "2025-11-19T14:36:16.25841+00:00"
+      },
+      {
+        "id": "02299d2a-83aa-4fd8-8f74-f40ca040eba8",
+        "session_id": "cfa0f62b-07fb-418b-9ffe-7d70bca04144",
+        "preferred_method": "B",
+        "preference_reason": "Fast to use and the information is linked to the correct field",
+        "created_at": "2025-11-19T14:45:19.734929+00:00"
+      },
+      {
+        "id": "62207f42-5825-42da-8597-9d1bb7cf0c96",
+        "session_id": "b2e445cc-673e-48ad-be61-9056f870b7bf",
+        "preferred_method": "C",
+        "preference_reason": "It was faster and easier to get to. Navigation on A was difficult. B was also good, but I liked C better",
+        "created_at": "2025-11-19T14:49:33.504396+00:00"
+      },
+      {
+        "id": "ae4f6748-3a5d-4c94-b552-eda68d3a497c",
+        "session_id": "eff82b5b-192d-402c-92da-a47cca251abf",
+        "preferred_method": "C",
+        "preference_reason": "its a shorter process and it took just a few minutes to complete this task",
+        "created_at": "2025-11-19T15:01:41.811019+00:00"
+      },
+      {
+        "id": "71c8940d-8405-40fe-b5e1-4d329990cb19",
+        "session_id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "preferred_method": "C",
+        "preference_reason": "quickest to highlight, less highlights to overlap, and easiest to find the highlight tool.",
+        "created_at": "2025-11-19T15:56:51.618119+00:00"
+      },
+      {
+        "id": "d162cc6d-90e1-408a-9996-f4b85eff8e61",
+        "session_id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "preferred_method": "C",
+        "preference_reason": "quickest to highlight, less highlights to overlap, and easiest to find the highlight tool.",
+        "created_at": "2025-11-19T15:56:52.008816+00:00"
+      },
+      {
+        "id": "9d0515fd-1e1c-4b08-85bb-30630a3c6247",
+        "session_id": "4608f5d4-2cfb-40de-a628-b7592db2cd16",
+        "preferred_method": "C",
+        "preference_reason": "1) It is easy to follow because it is a button clearly stated for adding highlight                                  2) It has clear instruction how to highlight each person in the birth certificate.                                       3) After I complete the highlights, I am able to see the highlights and on the right section, the individual that I mouse over can see the highlight rectangle in Select a Person section too",
+        "created_at": "2025-11-19T16:00:19.401292+00:00"
+      },
+      {
+        "id": "f4ad203a-a5bf-4b9f-8f96-efcc0fa1eb17",
+        "session_id": "7541742c-caf0-4274-99c4-bffc91085adb",
+        "preferred_method": "B",
+        "preference_reason": "It was the quickest to learn how to do it, to find the tool, and to go through and highlight.",
+        "created_at": "2025-11-19T16:02:15.057576+00:00"
+      },
+      {
+        "id": "fa7a65bd-a4c7-4eed-8bf5-b654f9c8dd1d",
+        "session_id": "acd90279-41d3-4cd6-978c-aeaeaa65622a",
+        "preferred_method": "C",
+        "preference_reason": "it was the easiest, fastest, and clearest",
+        "created_at": "2025-11-19T16:02:42.515416+00:00"
+      },
+      {
+        "id": "595b81bc-513f-4bcc-a7d0-6b56fc49016d",
+        "session_id": "398b4974-135c-4411-b33b-b3ffc9895be9",
+        "preferred_method": "C",
+        "preference_reason": "The button is very clear and simple to see.\nThe highlight functionality is simple and clear.",
+        "created_at": "2025-11-19T16:09:03.425581+00:00"
+      },
+      {
+        "id": "f3e30ef1-311b-4479-9718-cd4c945c1b4c",
+        "session_id": "fdfc5952-290c-4b59-beca-86b16318f3ce",
+        "preferred_method": "B",
+        "preference_reason": "I thought it was the quickest and i liked how you can highlight them in succession while being able to select which item you are highlighting. it was helpful in keeping me on track and it was the most organized.",
+        "created_at": "2025-11-19T16:20:42.355192+00:00"
+      },
+      {
+        "id": "70cb4a6f-f11e-497b-ad3b-ee5930707c70",
+        "session_id": "f66b8476-9909-4877-bfd8-143a4c8cc083",
+        "preferred_method": "B",
+        "preference_reason": "the task b has a seperate option just for highlighting which makes it kinda convinient, although task c does have that but not as convinient as task b",
+        "created_at": "2025-11-19T16:48:04.050488+00:00"
+      },
+      {
+        "id": "4dad5b1d-070f-48e0-b324-f93b6118990a",
+        "session_id": "913e6a64-a6ab-4099-9a36-de19a606b3d0",
+        "preferred_method": "C",
+        "preference_reason": "this version was the most intuitive and easy to navigate , also it was lease time consuming",
+        "created_at": "2025-11-19T17:25:19.427983+00:00"
+      },
+      {
+        "id": "0d694734-9aa8-445c-a390-9e256d840fbd",
+        "session_id": "de72ef27-65cb-4178-852c-de8090ac5e99",
+        "preferred_method": "B",
+        "preference_reason": "Because I could see my actual progress",
+        "created_at": "2025-11-19T17:43:15.270698+00:00"
+      },
+      {
+        "id": "29d20faf-a01c-450e-a997-bb727f34e9af",
+        "session_id": "895a3253-5b87-4398-9931-5bf9fc70a5f4",
+        "preferred_method": "B",
+        "preference_reason": "It is easier to keep track of the information due to the fact that it is attached to the corresponding fields",
+        "created_at": "2025-11-19T19:45:21.252198+00:00"
+      },
+      {
+        "id": "96778faa-5160-4800-a00b-d5f6cfc256d4",
+        "session_id": "b20f9c2d-cef1-45e6-b512-7588208cd26a",
+        "preferred_method": "C",
+        "preference_reason": "I preferred C because it was very clear how to use it, much more like other sites for highlighting.  You can highlight in blocks and just much more user friendly.  A was not helpful at all.  It took a lot of experimentation to figure out, and I clearly didn't do it correctly.  B was better, but still difficult and not userfriendly.",
+        "created_at": "2025-11-19T20:08:09.305608+00:00"
+      },
+      {
+        "id": "f6eb3c23-e4f4-4414-9df0-f2c8e3079dad",
+        "session_id": "190c1e3c-1f6d-4d76-904e-6ecd5aae5a69",
+        "preferred_method": "C",
+        "preference_reason": "it was a lot quicker and i was 100% sure that i highlighted everything compared to the other where i had a hard time and they where far more time consuming",
+        "created_at": "2025-11-19T20:13:45.896018+00:00"
+      },
+      {
+        "id": "44a8d53c-6f03-4d59-92de-bcbeb827e81f",
+        "session_id": "8df947cb-710c-4473-b32d-6b4e340ac545",
+        "preferred_method": "C",
+        "preference_reason": "So much faster and easier to use. Why am I even having to select each field to create a highlight in the other ones?",
+        "created_at": "2025-11-20T17:36:03.611362+00:00"
+      },
+      {
+        "id": "93e35be4-e6f2-40cb-8a69-28bc7001ec4a",
+        "session_id": "111b1590-23c0-4dc3-afea-c1d0a6e65822",
+        "preferred_method": "C",
+        "preference_reason": "It was just simple you just had to read the box on what to do nothing with a bunch of clicking to get to it",
+        "created_at": "2025-11-20T17:47:45.066419+00:00"
+      },
+      {
+        "id": "dc80fe72-6d50-4661-a825-b06892ada88a",
+        "session_id": "52f97d96-fd59-44d4-9746-9a2e0e62d487",
+        "preferred_method": "C",
+        "preference_reason": "It was efficient - I could highlight all the info for one person in a go.\nClear workflow - the ADD HIGHLIGHT button was visible and intuitive.\nVisual confirmation - As I was hovering over a person, I could see the highlight showing up on the document.\nIt made my journey smooth and saved a lot of time.",
+        "created_at": "2025-11-20T18:00:24.963821+00:00"
+      }
+    ],
+    "validationData": [
+      {
+        "id": "54003d46-1654-4484-8774-48ffb3292877",
+        "session_id": "8df947cb-710c-4473-b32d-6b4e340ac545",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 0,
+          "requiredHighlights": 13,
+          "completionPercentage": 0
+        },
+        "created_at": "2025-11-20T17:33:05.068031+00:00"
+      },
+      {
+        "id": "c2b2c42b-51d1-4bd3-a357-a52bea226be8",
+        "session_id": "111b1590-23c0-4dc3-afea-c1d0a6e65822",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 3,
+          "requiredHighlights": 13,
+          "completionPercentage": 23
+        },
+        "created_at": "2025-11-20T17:45:51.371292+00:00"
+      },
+      {
+        "id": "90f0e433-fd02-4404-8dab-0cf48ace005a",
+        "session_id": "52f97d96-fd59-44d4-9746-9a2e0e62d487",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 3,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-20T17:58:20.243487+00:00"
+      },
+      {
+        "id": "795fb0c2-b50b-4209-b19a-348afdac0973",
+        "session_id": "8df947cb-710c-4473-b32d-6b4e340ac545",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 17,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-20T17:34:44.319118+00:00"
+      },
+      {
+        "id": "2b52b27c-01d6-4121-af2e-2f895cfcfe28",
+        "session_id": "d10235b2-acab-4c52-8cd5-b86a317a4319",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 27,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T07:31:22.710648+00:00"
+      },
+      {
+        "id": "a458f6cd-c6b3-4f01-8c2a-bdf7b68bb205",
+        "session_id": "d10235b2-acab-4c52-8cd5-b86a317a4319",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 17,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T07:35:03.737947+00:00"
+      },
+      {
+        "id": "260c3db6-ef4a-43d3-b654-06448604f763",
+        "session_id": "111b1590-23c0-4dc3-afea-c1d0a6e65822",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 4,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-20T17:47:19.310946+00:00"
+      },
+      {
+        "id": "50802370-1c7b-4e5b-b8e1-3ad8da1d6888",
+        "session_id": "e0051971-005d-4c00-b2ae-4867eca6a232",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 25,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:30:05.50327+00:00"
+      },
+      {
+        "id": "3e41df29-e8a0-4ad9-aa0b-2a9c1f7396e2",
+        "session_id": "e0051971-005d-4c00-b2ae-4867eca6a232",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 16,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:33:44.123172+00:00"
+      },
+      {
+        "id": "b3be2749-59e8-4ed0-ac55-37c7a9340f5c",
+        "session_id": "cfa0f62b-07fb-418b-9ffe-7d70bca04144",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 24,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:40:29.678574+00:00"
+      },
+      {
+        "id": "5d73248a-fbf7-4e18-8e67-b0088ab6f6a1",
+        "session_id": "cfa0f62b-07fb-418b-9ffe-7d70bca04144",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 17,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:42:29.788592+00:00"
+      },
+      {
+        "id": "e784a928-2182-41d8-9fe0-917af6585692",
+        "session_id": "b2e445cc-673e-48ad-be61-9056f870b7bf",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 10,
+          "requiredHighlights": 13,
+          "completionPercentage": 77
+        },
+        "created_at": "2025-11-19T14:46:04.166356+00:00"
+      },
+      {
+        "id": "ac87ce13-2900-42ff-a5e1-39890ff63fc2",
+        "session_id": "b2e445cc-673e-48ad-be61-9056f870b7bf",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:47:56.019397+00:00"
+      },
+      {
+        "id": "89239596-9692-4dbf-b4ae-4b3b9a16042d",
+        "session_id": "eff82b5b-192d-402c-92da-a47cca251abf",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 35,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:54:48.980625+00:00"
+      },
+      {
+        "id": "3f635028-e7db-4eb8-ac27-e255d3b17245",
+        "session_id": "eff82b5b-192d-402c-92da-a47cca251abf",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 14,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:59:39.914784+00:00"
+      },
+      {
+        "id": "5ff8235a-a172-47b9-965c-38a14a367244",
+        "session_id": "96f86616-30a8-4a17-bb02-4d1f2841b6e1",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 6,
+          "requiredHighlights": 13,
+          "completionPercentage": 46
+        },
+        "created_at": "2025-11-19T15:44:40.168586+00:00"
+      },
+      {
+        "id": "cd9816ad-922b-4072-8011-abf60ce63442",
+        "session_id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 14,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T15:47:38.771749+00:00"
+      },
+      {
+        "id": "60bae4ce-0383-4791-b758-ba6e3ee98483",
+        "session_id": "4608f5d4-2cfb-40de-a628-b7592db2cd16",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 6,
+          "requiredHighlights": 13,
+          "completionPercentage": 46
+        },
+        "created_at": "2025-11-19T15:48:02.418953+00:00"
+      },
+      {
+        "id": "e8a0f006-7db7-4596-a819-5b0d1a329891",
+        "session_id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T15:52:58.292862+00:00"
+      },
+      {
+        "id": "d2ae82ce-303d-4d94-ada7-c25978a015dc",
+        "session_id": "acd90279-41d3-4cd6-978c-aeaeaa65622a",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 19,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T15:54:22.478361+00:00"
+      },
+      {
+        "id": "20d353d5-14f7-41a8-92f9-a1713ef3c2cd",
+        "session_id": "4608f5d4-2cfb-40de-a628-b7592db2cd16",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 11,
+          "requiredHighlights": 13,
+          "completionPercentage": 85
+        },
+        "created_at": "2025-11-19T15:55:32.869709+00:00"
+      },
+      {
+        "id": "eae56454-3f2f-4583-90c8-e48f9bc9897e",
+        "session_id": "7541742c-caf0-4274-99c4-bffc91085adb",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 0,
+          "requiredHighlights": 13,
+          "completionPercentage": 0
+        },
+        "created_at": "2025-11-19T15:57:57.435915+00:00"
+      },
+      {
+        "id": "e9e7e694-ecde-4f1c-bc99-2cc88073c538",
+        "session_id": "398b4974-135c-4411-b33b-b3ffc9895be9",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 14,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T15:59:10.730908+00:00"
+      },
+      {
+        "id": "a041458f-3d68-41e0-96c6-13c025b67610",
+        "session_id": "acd90279-41d3-4cd6-978c-aeaeaa65622a",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 17,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T15:59:16.296744+00:00"
+      },
+      {
+        "id": "d05777d4-e682-482d-9d4f-046f30b50954",
+        "session_id": "7541742c-caf0-4274-99c4-bffc91085adb",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:00:22.544908+00:00"
+      },
+      {
+        "id": "e85704ff-25b2-4425-beef-bcdf4c6c7935",
+        "session_id": "9de888ee-bbec-4dcd-8f8f-5cd4a3ff5066",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 8,
+          "requiredHighlights": 13,
+          "completionPercentage": 62
+        },
+        "created_at": "2025-11-19T16:01:53.066143+00:00"
+      },
+      {
+        "id": "b1df9ca0-6583-4193-abef-b68b7d4f300c",
+        "session_id": "398b4974-135c-4411-b33b-b3ffc9895be9",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 16,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:05:01.911389+00:00"
+      },
+      {
+        "id": "b3605606-7fa2-4110-8f7e-31b059be8194",
+        "session_id": "fdfc5952-290c-4b59-beca-86b16318f3ce",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 16,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:16:05.69474+00:00"
+      },
+      {
+        "id": "638d6ada-e8ee-44fa-a3b9-e4e3933cc6a6",
+        "session_id": "fdfc5952-290c-4b59-beca-86b16318f3ce",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:18:18.012095+00:00"
+      },
+      {
+        "id": "3a90e296-f082-4f5f-904f-3b82d69f2cca",
+        "session_id": "f66b8476-9909-4877-bfd8-143a4c8cc083",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 7,
+          "requiredHighlights": 13,
+          "completionPercentage": 54
+        },
+        "created_at": "2025-11-19T16:34:53.78132+00:00"
+      },
+      {
+        "id": "266589fd-8622-44e0-b0a5-5e2634afb447",
+        "session_id": "f66b8476-9909-4877-bfd8-143a4c8cc083",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 14,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:41:21.189375+00:00"
+      },
+      {
+        "id": "142785de-7f50-47b8-87e9-cfd5c65b7a6d",
+        "session_id": "913e6a64-a6ab-4099-9a36-de19a606b3d0",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 14,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T17:20:06.756175+00:00"
+      },
+      {
+        "id": "cc1a23d8-c305-441c-8367-bba2cb35c5fc",
+        "session_id": "913e6a64-a6ab-4099-9a36-de19a606b3d0",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 15,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T17:22:37.374434+00:00"
+      },
+      {
+        "id": "84d2d293-90d7-4544-8575-3a7f3525aee9",
+        "session_id": "de72ef27-65cb-4178-852c-de8090ac5e99",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 9,
+          "requiredHighlights": 13,
+          "completionPercentage": 69
+        },
+        "created_at": "2025-11-19T17:34:56.737013+00:00"
+      },
+      {
+        "id": "526f9ea5-9e6b-457e-a9e5-4c9a1e650a9e",
+        "session_id": "de72ef27-65cb-4178-852c-de8090ac5e99",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T17:38:43.297914+00:00"
+      },
+      {
+        "id": "18238c8b-f350-4dd2-805f-dc43663eec08",
+        "session_id": "8df947cb-710c-4473-b32d-6b4e340ac545",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 17,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-20T17:35:43.428355+00:00"
+      },
+      {
+        "id": "63553d13-2c8b-49a3-a2d7-37b8f90bbacb",
+        "session_id": "895a3253-5b87-4398-9931-5bf9fc70a5f4",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 15,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T19:40:26.300814+00:00"
+      },
+      {
+        "id": "e34fd262-0c91-4198-883e-7c9ed510e2d2",
+        "session_id": "895a3253-5b87-4398-9931-5bf9fc70a5f4",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 12,
+          "requiredHighlights": 13,
+          "completionPercentage": 92
+        },
+        "created_at": "2025-11-19T19:42:38.598125+00:00"
+      },
+      {
+        "id": "43b3306f-d7d6-4422-9f3a-cc7902f70eb5",
+        "session_id": "52f97d96-fd59-44d4-9746-9a2e0e62d487",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-20T17:51:47.353309+00:00"
+      },
+      {
+        "id": "5e921b81-4c04-49be-8321-3307f24f8d10",
+        "session_id": "7c2900ed-44ea-4a3f-a485-dea5677ed1e4",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 3,
+          "requiredHighlights": 13,
+          "completionPercentage": 23
+        },
+        "created_at": "2025-11-19T19:50:07.311119+00:00"
+      },
+      {
+        "id": "ac726b6b-19c9-47b3-b539-155dbc9db83e",
+        "session_id": "b20f9c2d-cef1-45e6-b512-7588208cd26a",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 8,
+          "requiredHighlights": 13,
+          "completionPercentage": 62
+        },
+        "created_at": "2025-11-19T19:57:39.543398+00:00"
+      },
+      {
+        "id": "c608f4e2-7b5f-49cc-b63b-7b0ea9447e97",
+        "session_id": "bce30916-2f86-4d2c-8428-5d4deaf28a55",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 7,
+          "requiredHighlights": 13,
+          "completionPercentage": 54
+        },
+        "created_at": "2025-11-19T19:59:27.682672+00:00"
+      },
+      {
+        "id": "a6ea600e-b6d1-48e6-a50c-7f2dff56109f",
+        "session_id": "b20f9c2d-cef1-45e6-b512-7588208cd26a",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 15,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T20:05:08.483183+00:00"
+      },
+      {
+        "id": "96aac006-6146-450d-9138-682a9be8745e",
+        "session_id": "190c1e3c-1f6d-4d76-904e-6ecd5aae5a69",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T20:09:04.626029+00:00"
+      },
+      {
+        "id": "0e33c2d4-388e-45cd-91cc-90378f2ee4ee",
+        "session_id": "190c1e3c-1f6d-4d76-904e-6ecd5aae5a69",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T20:11:05.243417+00:00"
+      },
+      {
+        "id": "d52a9355-8c71-477a-8a0b-1c92fd481d0a",
+        "session_id": "d10235b2-acab-4c52-8cd5-b86a317a4319",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 17,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T07:37:11.715854+00:00"
+      },
+      {
+        "id": "7d267181-ab86-4764-9e0c-d2af59e4facf",
+        "session_id": "e0051971-005d-4c00-b2ae-4867eca6a232",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 16,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:35:26.625373+00:00"
+      },
+      {
+        "id": "68423eef-f667-4b5e-bf38-a097179cc187",
+        "session_id": "cfa0f62b-07fb-418b-9ffe-7d70bca04144",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 17,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:44:51.007577+00:00"
+      },
+      {
+        "id": "849f0856-0a53-4bfb-80b2-1675ed20ddcf",
+        "session_id": "b2e445cc-673e-48ad-be61-9056f870b7bf",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 3,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T14:49:04.817438+00:00"
+      },
+      {
+        "id": "c51384c0-39ef-40e9-a667-af2a192b86a8",
+        "session_id": "eff82b5b-192d-402c-92da-a47cca251abf",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 4,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T15:01:09.54444+00:00"
+      },
+      {
+        "id": "76c429c0-3639-4ad7-9418-b0055463c909",
+        "session_id": "3364d33a-e46e-48ed-b815-e8c373779aba",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 3,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T15:55:13.80567+00:00"
+      },
+      {
+        "id": "48d1554b-0df7-4c14-b2b9-05d6458a4fb1",
+        "session_id": "4608f5d4-2cfb-40de-a628-b7592db2cd16",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 9,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T15:58:24.709468+00:00"
+      },
+      {
+        "id": "b90669f3-8458-4be3-b26b-b4bf68ec25f0",
+        "session_id": "7541742c-caf0-4274-99c4-bffc91085adb",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 10,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:01:57.386719+00:00"
+      },
+      {
+        "id": "12e8e53f-4200-4586-97e4-d12327ebd468",
+        "session_id": "acd90279-41d3-4cd6-978c-aeaeaa65622a",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 17,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:02:02.723391+00:00"
+      },
+      {
+        "id": "72ef6577-39be-4a90-91f0-644e50f1702c",
+        "session_id": "398b4974-135c-4411-b33b-b3ffc9895be9",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 4,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:08:00.344091+00:00"
+      },
+      {
+        "id": "43d42c70-f1a6-417e-ad2f-2a36b385a8db",
+        "session_id": "fdfc5952-290c-4b59-beca-86b16318f3ce",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 3,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:19:47.006125+00:00"
+      },
+      {
+        "id": "0bc6f3a5-fe1c-4488-967e-34e6159cf2ec",
+        "session_id": "f66b8476-9909-4877-bfd8-143a4c8cc083",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 14,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T16:45:47.942212+00:00"
+      },
+      {
+        "id": "2c8d27df-c2f7-4282-af68-5ad22ab9df13",
+        "session_id": "913e6a64-a6ab-4099-9a36-de19a606b3d0",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 15,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T17:24:23.803176+00:00"
+      },
+      {
+        "id": "8f7c9905-7a32-4f82-93d8-c1276800d5bd",
+        "session_id": "de72ef27-65cb-4178-852c-de8090ac5e99",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 10,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T17:42:40.653178+00:00"
+      },
+      {
+        "id": "ffb7236d-e4d8-45dc-aabd-e2ba1331387f",
+        "session_id": "895a3253-5b87-4398-9931-5bf9fc70a5f4",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 11,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T19:44:53.142344+00:00"
+      },
+      {
+        "id": "194e802e-d999-4d24-b2a5-f4c8a24c3ace",
+        "session_id": "b20f9c2d-cef1-45e6-b512-7588208cd26a",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 5,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T20:06:55.7773+00:00"
+      },
+      {
+        "id": "5dff27b5-baa8-4127-99f4-af31570fdc39",
+        "session_id": "190c1e3c-1f6d-4d76-904e-6ecd5aae5a69",
+        "task_id": "C",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 3,
+          "requiredHighlights": 3,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-19T20:12:42.366316+00:00"
+      },
+      {
+        "id": "bd8c80b6-5311-41ed-9e4f-43886f00c79c",
+        "session_id": "111b1590-23c0-4dc3-afea-c1d0a6e65822",
+        "task_id": "A",
+        "validation_data": {
+          "isSuccess": false,
+          "totalHighlights": 5,
+          "requiredHighlights": 13,
+          "completionPercentage": 38
+        },
+        "created_at": "2025-11-20T17:43:33.854211+00:00"
+      },
+      {
+        "id": "aed2b189-37ee-41c4-a3b4-c32a4dcfa98c",
+        "session_id": "52f97d96-fd59-44d4-9746-9a2e0e62d487",
+        "task_id": "B",
+        "validation_data": {
+          "isSuccess": true,
+          "totalHighlights": 13,
+          "requiredHighlights": 13,
+          "completionPercentage": 100
+        },
+        "created_at": "2025-11-20T17:56:10.187718+00:00"
+      }
+    ]
+  }
+}

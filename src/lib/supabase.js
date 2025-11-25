@@ -5,15 +5,22 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Fetch all test results for a given test
-export async function fetchTestResults(testId = 'highlights') {
+// Fetch all test results for a given test, filtered by project status
+export async function fetchTestResults(testId = 'highlights', projectStatus = null) {
   try {
     // Fetch all sessions for this test
-    const { data: sessions, error: sessionsError } = await supabase
+    let query = supabase
       .from('test_sessions')
       .select('*')
       .eq('test_id', testId)
-      .not('completed_at', 'is', null) // Only completed sessions
+      .not('completed_at', 'is', null); // Only completed sessions
+
+    // Filter by project status if provided
+    if (projectStatus) {
+      query = query.eq('project_status', projectStatus);
+    }
+
+    const { data: sessions, error: sessionsError } = await query
       .order('created_at', { ascending: false });
 
     if (sessionsError) throw sessionsError;
@@ -106,4 +113,57 @@ export function calculateStatistics(data) {
     preferenceStats,
     preferenceReasons,
   };
+}
+
+// Clear all test data for a given test ID
+export async function clearTestData(testId) {
+  try {
+    // First, get all session IDs for this test
+    const { data: sessions, error: sessionsError } = await supabase
+      .from('test_sessions')
+      .select('id')
+      .eq('test_id', testId);
+
+    if (sessionsError) throw sessionsError;
+
+    const sessionIds = sessions.map(s => s.id);
+
+    if (sessionIds.length === 0) {
+      return { success: true, message: 'No data to clear' };
+    }
+
+    // Delete data from all related tables
+    const { error: validationError } = await supabase
+      .from('task_validation_data')
+      .delete()
+      .in('session_id', sessionIds);
+
+    if (validationError) throw validationError;
+
+    const { error: surveyError } = await supabase
+      .from('survey_responses')
+      .delete()
+      .in('session_id', sessionIds);
+
+    if (surveyError) throw surveyError;
+
+    const { error: taskError } = await supabase
+      .from('task_completions')
+      .delete()
+      .in('session_id', sessionIds);
+
+    if (taskError) throw taskError;
+
+    const { error: sessionsDeleteError } = await supabase
+      .from('test_sessions')
+      .delete()
+      .eq('test_id', testId);
+
+    if (sessionsDeleteError) throw sessionsDeleteError;
+
+    return { success: true, message: `Cleared ${sessionIds.length} sessions` };
+  } catch (error) {
+    console.error('Error clearing test data:', error);
+    throw error;
+  }
 }

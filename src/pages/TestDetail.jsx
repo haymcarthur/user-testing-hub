@@ -13,7 +13,7 @@ const testData = {
       'Task C: Simple highlight mode for general information',
     ],
     created: 'November 2025',
-    status: 'Active',
+    status: 'in progress',
     participants: 0,
     url: 'https://highlight-user-test.vercel.app/',
   },
@@ -29,12 +29,78 @@ const TestDetail = () => {
   const [showRawData, setShowRawData] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState({});
   const [hoveredTask, setHoveredTask] = useState(null);
+  const [confirmModal, setConfirmModal] = useState(null);
+  const [currentStatus, setCurrentStatus] = useState(test?.status || 'planning');
+  const [finalDecisions, setFinalDecisions] = useState('');
+  const [showDecisionsModal, setShowDecisionsModal] = useState(false);
+  const [observations, setObservations] = useState([]);
+  const [newObservation, setNewObservation] = useState('');
+  const [editingObservation, setEditingObservation] = useState(null);
+
+  // Load status from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('projectStatuses');
+    if (saved) {
+      try {
+        const statuses = JSON.parse(saved);
+        if (statuses[testId]) {
+          setCurrentStatus(statuses[testId]);
+        } else {
+          // Use the test's default status from testData and save it
+          const defaultStatus = test?.status || 'planning';
+          setCurrentStatus(defaultStatus);
+          statuses[testId] = defaultStatus;
+          localStorage.setItem('projectStatuses', JSON.stringify(statuses));
+        }
+      } catch (err) {
+        console.error('Error loading status:', err);
+      }
+    } else {
+      // Use the test's default status from testData and save it
+      const defaultStatus = test?.status || 'planning';
+      setCurrentStatus(defaultStatus);
+      const statuses = { [testId]: defaultStatus };
+      localStorage.setItem('projectStatuses', JSON.stringify(statuses));
+    }
+  }, [testId, test]);
+
+  // Load final decisions from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('projectFinalDecisions');
+    if (saved) {
+      try {
+        const decisions = JSON.parse(saved);
+        if (decisions[testId]) {
+          setFinalDecisions(decisions[testId]);
+        }
+      } catch (err) {
+        console.error('Error loading final decisions:', err);
+      }
+    }
+  }, [testId]);
+
+  // Load observations from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem('projectObservations');
+    if (saved) {
+      try {
+        const allObservations = JSON.parse(saved);
+        if (allObservations[testId]) {
+          setObservations(allObservations[testId]);
+        }
+      } catch (err) {
+        console.error('Error loading observations:', err);
+      }
+    }
+  }, [testId]);
 
   useEffect(() => {
     async function loadResults() {
       try {
         setLoading(true);
-        const data = await fetchTestResults(testId);
+        // When status is complete, always show in progress results
+        const statusFilter = currentStatus === 'complete' ? 'in progress' : currentStatus;
+        const data = await fetchTestResults(testId, statusFilter);
         const statistics = calculateStatistics(data);
         setStats(statistics);
         setRawData(data);
@@ -49,7 +115,7 @@ const TestDetail = () => {
     if (testId) {
       loadResults();
     }
-  }, [testId]);
+  }, [testId, currentStatus]);
 
   const handleExportResults = () => {
     if (!stats || !rawData) {
@@ -110,6 +176,143 @@ const TestDetail = () => {
     setShowRawData(true);
   };
 
+  const handleStatusChange = (newStatus) => {
+    // Special handling for moving to Complete
+    if (newStatus === 'complete') {
+      // Show decisions modal instead of confirmation
+      setShowDecisionsModal(true);
+      return;
+    }
+
+    // Moving from in progress to planning
+    if (currentStatus === 'in progress' && newStatus === 'planning') {
+      setConfirmModal({
+        testId,
+        newStatus,
+        currentStatus,
+        message: 'Moving back to "Planning" will hide results collected during the "in progress" phase. They will reappear when you move back to "In Progress".',
+        type: 'single-confirm',
+      });
+      return;
+    }
+
+    // Default confirmation
+    setConfirmModal({
+      testId,
+      newStatus,
+      currentStatus,
+      message: `Change project status to "${newStatus}"? This will filter results to only show data collected during the ${newStatus} phase.`,
+      type: 'single-confirm',
+    });
+  };
+
+  const showChangeStatusOptions = () => {
+    setConfirmModal({
+      testId,
+      currentStatus,
+      message: 'Where would you like to move this project?',
+      type: 'change-status-options',
+    });
+  };
+
+  const confirmStatusChange = async (newStatus = null) => {
+    if (!confirmModal && !newStatus) return;
+
+    const targetStatus = newStatus || confirmModal.newStatus;
+
+    try {
+      // Update status in localStorage
+      const saved = localStorage.getItem('projectStatuses');
+      const statuses = saved ? JSON.parse(saved) : {};
+      statuses[testId] = targetStatus;
+      localStorage.setItem('projectStatuses', JSON.stringify(statuses));
+
+      // Update local state (this will trigger useEffect to reload results with new filter)
+      setCurrentStatus(targetStatus);
+
+      setConfirmModal(null);
+    } catch (err) {
+      console.error('Error changing status:', err);
+      alert('Failed to change status: ' + err.message);
+    }
+  };
+
+  const handleSaveFinalDecisions = () => {
+    if (!finalDecisions.trim()) {
+      alert('Please enter your final decisions before saving.');
+      return;
+    }
+
+    try {
+      // Save final decisions to localStorage
+      const saved = localStorage.getItem('projectFinalDecisions');
+      const decisions = saved ? JSON.parse(saved) : {};
+      decisions[testId] = finalDecisions;
+      localStorage.setItem('projectFinalDecisions', JSON.stringify(decisions));
+
+      // Update status to complete
+      confirmStatusChange('complete');
+
+      // Close modal
+      setShowDecisionsModal(false);
+    } catch (err) {
+      console.error('Error saving final decisions:', err);
+      alert('Failed to save final decisions: ' + err.message);
+    }
+  };
+
+  const saveObservations = (updatedObservations) => {
+    try {
+      const saved = localStorage.getItem('projectObservations');
+      const allObservations = saved ? JSON.parse(saved) : {};
+      allObservations[testId] = updatedObservations;
+      localStorage.setItem('projectObservations', JSON.stringify(allObservations));
+      setObservations(updatedObservations);
+    } catch (err) {
+      console.error('Error saving observations:', err);
+      alert('Failed to save observations: ' + err.message);
+    }
+  };
+
+  const handleAddObservation = () => {
+    if (!newObservation.trim()) return;
+
+    const observation = {
+      id: Date.now(),
+      text: newObservation.trim(),
+      tally: 1,
+      createdAt: new Date().toISOString(),
+    };
+
+    const updatedObservations = [...observations, observation];
+    saveObservations(updatedObservations);
+    setNewObservation('');
+  };
+
+  const handleIncrementTally = (id) => {
+    const updatedObservations = observations.map(obs =>
+      obs.id === id ? { ...obs, tally: obs.tally + 1 } : obs
+    );
+    saveObservations(updatedObservations);
+  };
+
+  const handleEditObservation = (id, newText) => {
+    if (!newText.trim()) return;
+
+    const updatedObservations = observations.map(obs =>
+      obs.id === id ? { ...obs, text: newText.trim() } : obs
+    );
+    saveObservations(updatedObservations);
+    setEditingObservation(null);
+  };
+
+  const handleDeleteObservation = (id) => {
+    if (!confirm('Are you sure you want to delete this observation?')) return;
+
+    const updatedObservations = observations.filter(obs => obs.id !== id);
+    saveObservations(updatedObservations);
+  };
+
   if (!test) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -151,8 +354,12 @@ const TestDetail = () => {
                 </div>
                 <div>
                   <h3 className="text-sm font-medium text-gray-700 mb-1">Status</h3>
-                  <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                    {test.status}
+                  <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full capitalize ${
+                    currentStatus === 'planning' ? 'bg-gray-100 text-gray-800' :
+                    currentStatus === 'in progress' ? 'bg-blue-100 text-blue-800' :
+                    'bg-green-100 text-green-800'
+                  }`}>
+                    {currentStatus}
                   </span>
                 </div>
                 <div>
@@ -177,9 +384,38 @@ const TestDetail = () => {
               </ul>
             </div>
 
+            {/* Final Decisions Card - Only shown when status is Complete */}
+            {currentStatus === 'complete' && finalDecisions && (
+              <div className="bg-white rounded-lg shadow-md p-6 border-2 border-green-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-semibold text-gray-900">Final Decisions</h2>
+                  <button
+                    onClick={() => setShowDecisionsModal(true)}
+                    className="px-3 py-1 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                  >
+                    Edit
+                  </button>
+                </div>
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-gray-700 whitespace-pre-wrap">{finalDecisions}</p>
+                </div>
+              </div>
+            )}
+
             {/* Results Card */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Results</h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">Results</h2>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-600">Showing:</span>
+                  <span className={`px-3 py-1 text-sm font-medium rounded-full capitalize ${
+                    (currentStatus === 'complete' || currentStatus === 'in progress') ? 'bg-blue-100 text-blue-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {currentStatus === 'complete' ? 'in progress' : currentStatus} phase
+                  </span>
+                </div>
+              </div>
               {loading ? (
                 <div className="text-center py-8 text-gray-500">
                   <p>Loading results...</p>
@@ -538,30 +774,53 @@ const TestDetail = () => {
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-4">
+            <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <a
-                  href={test.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-                >
-                  Launch Test
-                </a>
+                {currentStatus !== 'complete' ? (
+                  <a
+                    href={test.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                  >
+                    Launch Test
+                  </a>
+                ) : (
+                  <div className="w-full px-4 py-2 text-center text-sm font-medium text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed">
+                    Launch Test (Disabled - Complete)
+                  </div>
+                )}
+                {currentStatus === 'planning' && (
+                  <button
+                    onClick={() => handleStatusChange('in progress')}
+                    className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  >
+                    Move to In Progress
+                  </button>
+                )}
+                {currentStatus === 'in progress' && (
+                  <button
+                    onClick={showChangeStatusOptions}
+                    className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  >
+                    Change Status
+                  </button>
+                )}
+                {currentStatus === 'complete' && (
+                  <button
+                    onClick={showChangeStatusOptions}
+                    className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                  >
+                    Change Status
+                  </button>
+                )}
                 <button
                   onClick={handleExportResults}
                   disabled={loading || !stats || stats.totalParticipants === 0}
                   className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Export Results
-                </button>
-                <button
-                  onClick={handleViewRawData}
-                  disabled={loading || !rawData}
-                  className="w-full px-4 py-2 text-center text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  View Raw Data
                 </button>
               </div>
 
@@ -594,9 +853,248 @@ const TestDetail = () => {
                 </div>
               </div>
             </div>
+
+            {/* Manual Observations Card */}
+            <div className="bg-white rounded-lg shadow-md p-6 mt-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Manual Observations</h3>
+
+              {/* Add new observation */}
+              <div className="mb-4">
+                <textarea
+                  value={newObservation}
+                  onChange={(e) => setNewObservation(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleAddObservation();
+                    }
+                  }}
+                  placeholder="Add an observation..."
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  rows="2"
+                />
+                <button
+                  onClick={handleAddObservation}
+                  disabled={!newObservation.trim()}
+                  className="mt-2 w-full px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  Add Observation
+                </button>
+              </div>
+
+              {/* Observations list */}
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {observations
+                  .sort((a, b) => b.tally - a.tally)
+                  .map((obs) => (
+                    <div key={obs.id} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                      {editingObservation === obs.id ? (
+                        <div className="space-y-2">
+                          <textarea
+                            defaultValue={obs.text}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleEditObservation(obs.id, e.target.value);
+                              }
+                              if (e.key === 'Escape') {
+                                setEditingObservation(null);
+                              }
+                            }}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                            rows="2"
+                            autoFocus
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={(e) => {
+                                const textarea = e.target.closest('.space-y-2').querySelector('textarea');
+                                handleEditObservation(obs.id, textarea.value);
+                              }}
+                              className="flex-1 px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors"
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={() => setEditingObservation(null)}
+                              className="flex-1 px-2 py-1 text-xs font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <p className="text-sm text-gray-700 flex-1">{obs.text}</p>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => setEditingObservation(obs.id)}
+                                className="p-1 text-gray-500 hover:text-blue-600 transition-colors"
+                                title="Edit"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDeleteObservation(obs.id)}
+                                className="p-1 text-gray-500 hover:text-red-600 transition-colors"
+                                title="Delete"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleIncrementTally(obs.id)}
+                              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded transition-colors"
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                              Add Tally
+                            </button>
+                            <span className="text-xs font-semibold text-gray-600">
+                              {obs.tally} {obs.tally === 1 ? 'mention' : 'mentions'}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+
+                {observations.length === 0 && (
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    No observations yet. Add one above!
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </main>
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              {confirmModal.type === 'change-status-options' ? 'Change Status' : 'Confirm Status Change'}
+            </h3>
+            <p className="text-gray-600 mb-6">{confirmModal.message}</p>
+
+            {confirmModal.type === 'change-status-options' ? (
+              <div className="space-y-3">
+                {confirmModal.currentStatus === 'in progress' && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setConfirmModal(null);
+                        handleStatusChange('planning');
+                      }}
+                      className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      Move to Planning
+                    </button>
+                    <button
+                      onClick={() => {
+                        setConfirmModal(null);
+                        handleStatusChange('complete');
+                      }}
+                      className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                    >
+                      Move to Complete
+                    </button>
+                  </>
+                )}
+                {confirmModal.currentStatus === 'complete' && (
+                  <>
+                    <button
+                      onClick={() => {
+                        setConfirmModal(null);
+                        handleStatusChange('planning');
+                      }}
+                      className="w-full px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                    >
+                      Move to Planning
+                    </button>
+                    <button
+                      onClick={() => {
+                        setConfirmModal(null);
+                        handleStatusChange('in progress');
+                      }}
+                      className="w-full px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                    >
+                      Move to In Progress
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={() => setConfirmModal(null)}
+                  className="w-full px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => setConfirmModal(null)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => confirmStatusChange()}
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                >
+                  Confirm
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Final Decisions Modal */}
+      {showDecisionsModal && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">Record Final Decisions</h3>
+            <p className="text-gray-600 mb-4">
+              Document your final decisions based on the test results. This will be saved and displayed when the project is marked as complete.
+              {finalDecisions && <span className="block mt-2 text-sm text-blue-600">You previously recorded decisions. You can update them below.</span>}
+            </p>
+            <textarea
+              value={finalDecisions}
+              onChange={(e) => setFinalDecisions(e.target.value)}
+              placeholder="Enter your final decisions and conclusions from this test..."
+              className="w-full h-48 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            />
+            <div className="flex gap-3 justify-end mt-6">
+              <button
+                onClick={() => {
+                  setShowDecisionsModal(false);
+                  setFinalDecisions(finalDecisions); // Reset to previous value if cancelled
+                }}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveFinalDecisions}
+                className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+              >
+                Save & Mark Complete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Raw Data Modal */}
       {showRawData && rawData && (
