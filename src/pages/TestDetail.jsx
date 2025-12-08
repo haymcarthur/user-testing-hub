@@ -411,6 +411,9 @@ const TestDetail = () => {
       })).filter(obs => obs.participantIds.length > 0);
       saveObservations(updatedObservations);
 
+      // Small delay to ensure Supabase replication completes
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       // Reload results
       const statusFilter = currentStatus === 'complete' ? 'in progress' : currentStatus;
       console.log('Reloading results with status:', statusFilter);
