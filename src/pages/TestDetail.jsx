@@ -1,6 +1,13 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { fetchTestResults, calculateStatistics } from '../lib/supabase';
+import { fetchTestResults, calculateStatistics, deleteSession } from '../lib/supabase';
+
+// Task name mapping (Round 2: Red/Blue/Green Method)
+const TASK_NAMES = {
+  'A': 'Red Method',
+  'B': 'Blue Method',
+  'C': 'Green Method'
+};
 
 const testData = {
   highlights: {
@@ -8,12 +15,12 @@ const testData = {
     description: 'A/B testing different methods of highlighting information on historical birth records',
     objective: 'Compare three different highlighting methods to determine which provides the best user experience for extracting information from historical documents.',
     tasks: [
-      'Task A: Manual highlight with attach/detach buttons',
-      'Task B: Field-focused highlighting with automatic attachment',
-      'Task C: Simple highlight mode for general information',
+      'Red Method (Task A): Manual highlight with attach/detach buttons',
+      'Blue Method (Task B): Field-focused highlighting with automatic attachment',
+      'Green Method (Task C): Simple highlight mode for general information',
     ],
     created: 'November 2025',
-    status: 'in progress',
+    status: 'planning',
     participants: 0,
     url: 'https://highlight-user-test.vercel.app/',
   },
@@ -30,12 +37,28 @@ const TestDetail = () => {
   const [expandedTasks, setExpandedTasks] = useState({});
   const [hoveredTask, setHoveredTask] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null);
-  const [currentStatus, setCurrentStatus] = useState(test?.status || 'planning');
+  const [currentStatus, setCurrentStatus] = useState('planning');
+  const [statusLoaded, setStatusLoaded] = useState(false);
   const [finalDecisions, setFinalDecisions] = useState('');
   const [showDecisionsModal, setShowDecisionsModal] = useState(false);
   const [observations, setObservations] = useState([]);
   const [newObservation, setNewObservation] = useState('');
   const [editingObservation, setEditingObservation] = useState(null);
+  const [testRoundFilter, setTestRoundFilter] = useState('all'); // 'all', '1', or '2'
+  const [videoModalSession, setVideoModalSession] = useState(null); // Changed from videoModalUrl to store full session
+  const [selectedObservationText, setSelectedObservationText] = useState('');
+  const [showObservationDropdown, setShowObservationDropdown] = useState(false);
+
+  // ESC key to close video modal
+  useEffect(() => {
+    const handleEsc = (event) => {
+      if (event.key === 'Escape' && videoModalSession) {
+        setVideoModalSession(null);
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [videoModalSession]);
 
   // Load status from localStorage
   useEffect(() => {
@@ -62,6 +85,7 @@ const TestDetail = () => {
       const statuses = { [testId]: defaultStatus };
       localStorage.setItem('projectStatuses', JSON.stringify(statuses));
     }
+    setStatusLoaded(true);
   }, [testId, test]);
 
   // Load final decisions from localStorage
@@ -94,13 +118,36 @@ const TestDetail = () => {
     }
   }, [testId]);
 
+  // Migrate old observation format to new format (one-time migration)
+  useEffect(() => {
+    if (observations.length === 0) return;
+
+    const needsMigration = observations.some(obs => 'tally' in obs && !('participantIds' in obs));
+
+    if (needsMigration) {
+      console.log('Migrating observations from old format to new format...');
+      const migratedObs = observations.map(obs => ({
+        id: obs.id,
+        text: obs.text,
+        participantIds: [], // Start with no linked participants
+        createdAt: obs.createdAt,
+      }));
+      saveObservations(migratedObs);
+      console.log('Migration complete!');
+    }
+  }, [observations.length]); // Only run when observations length changes
+
   useEffect(() => {
     async function loadResults() {
       try {
         setLoading(true);
-        // When status is complete, always show in progress results
+        // When status is "complete", show results from "in progress" phase
+        // This allows team members to try the test without their results being shown
         const statusFilter = currentStatus === 'complete' ? 'in progress' : currentStatus;
-        const data = await fetchTestResults(testId, statusFilter);
+        console.log('Loading results with filters:', { statusFilter, testRoundFilter, currentStatus });
+        const data = await fetchTestResults(testId, statusFilter, testRoundFilter);
+        console.log('Loaded sessions:', data.sessions?.length, 'sessions');
+        console.log('Session details:', data.sessions?.map(s => ({ id: s.id, status: s.project_status, round: s.test_round })));
         const statistics = calculateStatistics(data);
         setStats(statistics);
         setRawData(data);
@@ -112,10 +159,10 @@ const TestDetail = () => {
       }
     }
 
-    if (testId) {
+    if (testId && statusLoaded) {
       loadResults();
     }
-  }, [testId, currentStatus]);
+  }, [testId, currentStatus, testRoundFilter, statusLoaded]);
 
   const handleExportResults = () => {
     if (!stats || !rawData) {
@@ -137,7 +184,7 @@ const TestDetail = () => {
     ['A', 'B', 'C'].forEach(taskId => {
       const taskStat = stats.taskStats[taskId];
       if (taskStat) {
-        csv += `Task ${taskId},${taskStat.avgTimeSeconds},${taskStat.avgDifficulty},${taskStat.selfReportedSuccessRate},${taskStat.actualSuccessRate},${taskStat.totalAttempts}\n`;
+        csv += `${TASK_NAMES[taskId]},${taskStat.avgTimeSeconds},${taskStat.avgDifficulty},${taskStat.selfReportedSuccessRate},${taskStat.actualSuccessRate},${taskStat.totalAttempts}\n`;
       }
     });
 
@@ -184,24 +231,19 @@ const TestDetail = () => {
       return;
     }
 
-    // Moving from in progress to planning
-    if (currentStatus === 'in progress' && newStatus === 'planning') {
-      setConfirmModal({
-        testId,
-        newStatus,
-        currentStatus,
-        message: 'Moving back to "Planning" will hide results collected during the "in progress" phase. They will reappear when you move back to "In Progress".',
-        type: 'single-confirm',
-      });
-      return;
+    // Confirm status change
+    let message = '';
+    if (newStatus === 'planning') {
+      message = 'Change project status to "Planning"? This will show only results collected during the planning phase. Use this phase to test your prototype and verify data collection. New test sessions will be recorded and displayed.';
+    } else if (newStatus === 'in progress') {
+      message = 'Change project status to "In Progress"? This will show only results collected during this phase (planning results will be hidden). New test sessions will be recorded and displayed. This is your main data collection phase with real testers.';
     }
 
-    // Default confirmation
     setConfirmModal({
       testId,
       newStatus,
       currentStatus,
-      message: `Change project status to "${newStatus}"? This will filter results to only show data collected during the ${newStatus} phase.`,
+      message,
       type: 'single-confirm',
     });
   };
@@ -280,7 +322,7 @@ const TestDetail = () => {
     const observation = {
       id: Date.now(),
       text: newObservation.trim(),
-      tally: 1,
+      participantIds: [], // Start with no linked participants
       createdAt: new Date().toISOString(),
     };
 
@@ -289,11 +331,51 @@ const TestDetail = () => {
     setNewObservation('');
   };
 
-  const handleIncrementTally = (id) => {
-    const updatedObservations = observations.map(obs =>
-      obs.id === id ? { ...obs, tally: obs.tally + 1 } : obs
-    );
-    saveObservations(updatedObservations);
+  // Link observation to participant (create if doesn't exist)
+  const linkObservationToParticipant = (sessionId, observationText) => {
+    if (!observationText.trim()) return;
+
+    const existingObs = observations.find(obs => obs.text.toLowerCase() === observationText.trim().toLowerCase());
+
+    if (existingObs) {
+      // Add participant to existing observation
+      if (!existingObs.participantIds.includes(sessionId)) {
+        const updatedObs = observations.map(obs =>
+          obs.id === existingObs.id
+            ? { ...obs, participantIds: [...obs.participantIds, sessionId] }
+            : obs
+        );
+        saveObservations(updatedObs);
+      }
+    } else {
+      // Create new observation
+      const newObs = {
+        id: Date.now(),
+        text: observationText.trim(),
+        participantIds: [sessionId],
+        createdAt: new Date().toISOString(),
+      };
+      saveObservations([...observations, newObs]);
+    }
+
+    setSelectedObservationText(''); // Clear input
+  };
+
+  // Unlink observation from participant
+  const unlinkObservationFromParticipant = (sessionId, observationId) => {
+    const updatedObs = observations.map(obs =>
+      obs.id === observationId
+        ? { ...obs, participantIds: obs.participantIds.filter(id => id !== sessionId) }
+        : obs
+    ).filter(obs => obs.participantIds.length > 0); // Remove observations with no participants
+
+    saveObservations(updatedObs);
+  };
+
+  // Open video modal with participant context
+  const openVideoModalWithParticipant = (session) => {
+    setVideoModalSession(session);
+    setSelectedObservationText(''); // Clear observation input when opening
   };
 
   const handleEditObservation = (id, newText) => {
@@ -311,6 +393,31 @@ const TestDetail = () => {
 
     const updatedObservations = observations.filter(obs => obs.id !== id);
     saveObservations(updatedObservations);
+  };
+
+  const handleDeleteSession = async (sessionId) => {
+    if (!confirm('Are you sure you want to delete this participant\'s data? This cannot be undone.')) return;
+
+    try {
+      await deleteSession(sessionId);
+
+      // Remove observations linked to this session
+      const updatedObservations = observations.map(obs => ({
+        ...obs,
+        participantIds: obs.participantIds.filter(id => id !== sessionId)
+      })).filter(obs => obs.participantIds.length > 0);
+      saveObservations(updatedObservations);
+
+      // Reload results
+      const statusFilter = currentStatus === 'complete' ? 'in progress' : currentStatus;
+      const data = await fetchTestResults(testId, statusFilter, testRoundFilter);
+      const statistics = calculateStatistics(data);
+      setStats(statistics);
+      setRawData(data);
+    } catch (error) {
+      console.error('Error deleting session:', error);
+      alert('Failed to delete session: ' + error.message);
+    }
   };
 
   if (!test) {
@@ -406,14 +513,31 @@ const TestDetail = () => {
             <div className="bg-white rounded-lg shadow-md p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-900">Results</h2>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">Showing:</span>
-                  <span className={`px-3 py-1 text-sm font-medium rounded-full capitalize ${
-                    (currentStatus === 'complete' || currentStatus === 'in progress') ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {currentStatus === 'complete' ? 'in progress' : currentStatus} phase
-                  </span>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Test Round:</span>
+                    <select
+                      value={testRoundFilter}
+                      onChange={(e) => setTestRoundFilter(e.target.value)}
+                      className="px-3 py-1 text-sm font-medium border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    >
+                      <option value="all">All Results</option>
+                      <option value="1">Round 1 (Fixed Order)</option>
+                      <option value="2">Round 2 (Randomized)</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">
+                      {currentStatus === 'complete' ? 'Showing Results From:' : 'Project Status:'}
+                    </span>
+                    <span className={`px-3 py-1 text-sm font-medium rounded-full capitalize ${
+                      currentStatus === 'planning' ? 'bg-gray-100 text-gray-800' :
+                      currentStatus === 'complete' ? 'bg-blue-100 text-blue-800' :
+                      'bg-blue-100 text-blue-800'
+                    }`}>
+                      {currentStatus === 'complete' ? 'in progress' : currentStatus}
+                    </span>
+                  </div>
                 </div>
               </div>
               {loading ? (
@@ -462,7 +586,7 @@ const TestDetail = () => {
                           return (
                             <div key={taskId}>
                               <div className="flex items-center gap-3 mb-1">
-                                <span className="text-sm font-medium text-gray-700 w-16">Task {taskId}</span>
+                                <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[taskId]}</span>
                                 <div className="flex-1 bg-gray-200 rounded h-8 relative">
                                   <div
                                     className="bg-blue-600 h-8 rounded flex items-center px-3"
@@ -494,7 +618,7 @@ const TestDetail = () => {
                           return (
                             <div key={taskId}>
                               <div className="flex items-center gap-3 mb-1">
-                                <span className="text-sm font-medium text-gray-700 w-16">Task {taskId}</span>
+                                <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[taskId]}</span>
                                 <div className="flex-1 bg-gray-200 rounded h-8 relative">
                                   <div
                                     className="bg-green-600 h-8 rounded flex items-center px-3"
@@ -617,7 +741,7 @@ const TestDetail = () => {
                                     transform: 'translate(-50%, -50%)',
                                     opacity: isVisible ? 1 : 0
                                   }}
-                                  title={`Task ${completion.task_id}: ${timeSpent}s, Difficulty ${difficulty}/5, ${completion.actual_success ? 'Success' : 'Failure'}`}
+                                  title={`${TASK_NAMES[completion.task_id]}: ${timeSpent}s, Difficulty ${difficulty}/5, ${completion.actual_success ? 'Success' : 'Failure'}`}
                                 >
                                   <div className={`w-3 h-3 ${taskColors[completion.task_id]} rounded-full shadow-md ${borderColors[completion.task_id]} border-2`}>
                                   </div>
@@ -635,7 +759,7 @@ const TestDetail = () => {
                           <span className="text-gray-600">Success</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-gray-200 rounded-full border border-gray-300"></div>
+                          <div className="w-3 h-3 bg-gray-200 rounded-full border-2 border-gray-600"></div>
                           <span className="text-gray-600">Failure</span>
                         </div>
                       </div>
@@ -674,7 +798,7 @@ const TestDetail = () => {
                                     </svg>
                                   </button>
                                   <div className={`w-3 h-3 rounded-full ${taskId === 'A' ? 'bg-blue-600' : taskId === 'B' ? 'bg-orange-600' : 'bg-purple-600'}`}></div>
-                                  <span className="font-medium text-gray-900">Task {taskId} (Average)</span>
+                                  <span className="font-medium text-gray-900">{TASK_NAMES[taskId]} (Average)</span>
                                 </div>
                                 <div className="flex gap-6 text-sm">
                                   <div>
@@ -694,33 +818,43 @@ const TestDetail = () => {
                               {/* Individual Participant Details */}
                               {isExpanded && taskCompletions.length > 0 && (
                                 <div className="mt-2 ml-6 space-y-2">
-                                  {taskCompletions.map((completion, idx) => (
-                                    <div key={`${completion.session_id}-${idx}`} className="flex items-center justify-between text-xs bg-gray-50 p-2 rounded">
-                                      <span className="text-gray-600">Participant {idx + 1}</span>
-                                      <div className="flex gap-4">
-                                        <div>
-                                          <span className="text-gray-600">Self-Reported: </span>
-                                          <span className={completion.self_reported_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                                            {completion.self_reported_success ? 'Success' : 'Failure'}
-                                          </span>
+                                  {taskCompletions.map((completion, idx) => {
+                                    // Find session for this completion to get presentation order
+                                    const session = rawData?.sessions?.find(s => s.id === completion.session_id);
+
+                                    return (
+                                      <div key={`${completion.session_id}-${idx}`} className="flex items-center justify-between text-xs bg-gray-50 p-2 rounded">
+                                        <div className="flex items-center gap-3">
+                                          <span className="text-gray-600">Participant {idx + 1}</span>
+                                          {session?.presentation_order && (
+                                            <span className="text-gray-500 text-xs">({session.presentation_order})</span>
+                                          )}
                                         </div>
-                                        <div>
-                                          <span className="text-gray-600">Actual: </span>
-                                          <span className={completion.actual_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                                            {completion.actual_success ? 'Success' : 'Failure'}
-                                          </span>
-                                        </div>
-                                        <div>
-                                          <span className="text-gray-600">Time: </span>
-                                          <span className="font-medium">{completion.time_spent_seconds}s</span>
-                                        </div>
-                                        <div>
-                                          <span className="text-gray-600">Difficulty: </span>
-                                          <span className="font-medium">{completion.difficulty_rating}/5</span>
+                                        <div className="flex gap-4">
+                                          <div>
+                                            <span className="text-gray-600">Self-Reported: </span>
+                                            <span className={completion.self_reported_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                              {completion.self_reported_success ? 'Success' : 'Failure'}
+                                            </span>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-600">Actual: </span>
+                                            <span className={completion.actual_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                              {completion.actual_success ? 'Success' : 'Failure'}
+                                            </span>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-600">Time: </span>
+                                            <span className="font-medium">{completion.time_spent_seconds}s</span>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-600">Difficulty: </span>
+                                            <span className="font-medium">{completion.difficulty_rating}/5</span>
+                                          </div>
                                         </div>
                                       </div>
-                                    </div>
-                                  ))}
+                                    );
+                                  })}
                                 </div>
                               )}
                             </div>
@@ -737,7 +871,7 @@ const TestDetail = () => {
                       <div className="space-y-2">
                         {stats.preferenceStats.sort((a, b) => b.count - a.count).map(pref => (
                           <div key={pref.method} className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-gray-700 w-16">{pref.method}</span>
+                            <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[pref.method] || pref.method}</span>
                             <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
                               <div
                                 className="bg-blue-600 h-6 rounded-full flex items-center justify-end px-2"
@@ -753,18 +887,39 @@ const TestDetail = () => {
                     </div>
                   )}
 
-                  {/* Preference Reasons */}
-                  {stats.preferenceReasons && stats.preferenceReasons.length > 0 && (
+                  {/* Observation Summary */}
+                  {observations && observations.length > 0 && rawData?.sessions && (
                     <div>
-                      <h3 className="text-lg font-medium text-gray-900 mb-3">Why They Preferred It</h3>
-                      <div className="space-y-3 max-h-96 overflow-y-auto">
-                        {stats.preferenceReasons.map((item, idx) => (
-                          <div key={idx} className="bg-gray-50 p-3 rounded border-l-2 border-blue-500">
-                            <p className="text-xs font-medium text-blue-600 mb-1">Preferred Task {item.method}</p>
-                            <p className="text-sm text-gray-700">{item.reason}</p>
-                          </div>
-                        ))}
+                      <h3 className="text-lg font-medium text-gray-900 mb-3">Observation Summary</h3>
+                      <div className="space-y-2">
+                        {observations
+                          .map(obs => {
+                            // Only count participants that are in the filtered sessions
+                            const filteredSessionIds = rawData.sessions.map(s => s.id);
+                            const filteredParticipantIds = (obs.participantIds || []).filter(id => filteredSessionIds.includes(id));
+                            const count = filteredParticipantIds.length;
+                            return { ...obs, count };
+                          })
+                          .filter(obs => obs.count > 0)
+                          .sort((a, b) => b.count - a.count)
+                          .map(obs => (
+                            <div key={obs.id} className="flex items-center justify-between bg-gray-50 p-3 rounded">
+                              <span className="text-sm text-gray-700 flex-1">{obs.text}</span>
+                              <span className="text-sm font-medium text-gray-900 ml-4">
+                                {obs.count} {obs.count === 1 ? 'participant' : 'participants'}
+                              </span>
+                            </div>
+                          ))}
                       </div>
+                      {observations.every(obs => {
+                        const filteredSessionIds = rawData.sessions.map(s => s.id);
+                        const filteredParticipantIds = (obs.participantIds || []).filter(id => filteredSessionIds.includes(id));
+                        return filteredParticipantIds.length === 0;
+                      }) && (
+                        <p className="text-sm text-gray-500 text-center py-4">
+                          No observations linked to participants yet
+                        </p>
+                      )}
                     </div>
                   )}
                 </div>
@@ -777,20 +932,19 @@ const TestDetail = () => {
             <div className="bg-white rounded-lg shadow-md p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                {currentStatus !== 'complete' ? (
-                  <a
-                    href={test.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-                  >
-                    Launch Test
-                  </a>
-                ) : (
-                  <div className="w-full px-4 py-2 text-center text-sm font-medium text-gray-400 bg-gray-100 rounded-lg cursor-not-allowed">
-                    Launch Test (Disabled - Complete)
-                  </div>
-                )}
+                <a
+                  href={`${test.url}?status=${encodeURIComponent(currentStatus)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                >
+                  Launch Test
+                  {currentStatus === 'complete' && (
+                    <span className="block text-xs text-blue-100 mt-1">
+                      (Preview - results won't be shown)
+                    </span>
+                  )}
+                </a>
                 {currentStatus === 'planning' && (
                   <button
                     onClick={() => handleStatusChange('in progress')}
@@ -834,12 +988,6 @@ const TestDetail = () => {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Completion Rate:</span>
-                    <span className="font-medium">
-                      {loading || !stats || stats.totalParticipants === 0 ? '-' : '100%'}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
                     <span>Avg. Total Time:</span>
                     <span className="font-medium">
                       {loading || !stats || stats.totalParticipants === 0 ? '-' : (() => {
@@ -854,125 +1002,75 @@ const TestDetail = () => {
               </div>
             </div>
 
-            {/* Manual Observations Card */}
+            {/* Participants & Observations Card */}
             <div className="bg-white rounded-lg shadow-md p-6 mt-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Manual Observations</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Participants & Observations</h3>
 
-              {/* Add new observation */}
-              <div className="mb-4">
-                <textarea
-                  value={newObservation}
-                  onChange={(e) => setNewObservation(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleAddObservation();
-                    }
-                  }}
-                  placeholder="Add an observation..."
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                  rows="2"
-                />
-                <button
-                  onClick={handleAddObservation}
-                  disabled={!newObservation.trim()}
-                  className="mt-2 w-full px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed rounded-lg transition-colors"
-                >
-                  Add Observation
-                </button>
-              </div>
+              {loading ? (
+                <p className="text-sm text-gray-500 text-center py-4">Loading participants...</p>
+              ) : !rawData || !rawData.sessions || rawData.sessions.length === 0 ? (
+                <p className="text-sm text-gray-500 text-center py-4">No participants yet</p>
+              ) : (
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {rawData.sessions.map((session, idx) => {
+                    const surveyResponse = rawData.surveyResponses?.find(sr => sr.session_id === session.id);
+                    const linkedObs = observations.filter(obs => obs.participantIds?.includes(session.id));
 
-              {/* Observations list */}
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {observations
-                  .sort((a, b) => b.tally - a.tally)
-                  .map((obs) => (
-                    <div key={obs.id} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
-                      {editingObservation === obs.id ? (
-                        <div className="space-y-2">
-                          <textarea
-                            defaultValue={obs.text}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                handleEditObservation(obs.id, e.target.value);
-                              }
-                              if (e.key === 'Escape') {
-                                setEditingObservation(null);
-                              }
-                            }}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                            rows="2"
-                            autoFocus
-                          />
-                          <div className="flex gap-2">
-                            <button
-                              onClick={(e) => {
-                                const textarea = e.target.closest('.space-y-2').querySelector('textarea');
-                                handleEditObservation(obs.id, textarea.value);
-                              }}
-                              className="flex-1 px-2 py-1 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors"
-                            >
-                              Save
-                            </button>
-                            <button
-                              onClick={() => setEditingObservation(null)}
-                              className="flex-1 px-2 py-1 text-xs font-medium text-gray-700 bg-gray-200 hover:bg-gray-300 rounded transition-colors"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-start justify-between gap-2 mb-2">
-                            <p className="text-sm text-gray-700 flex-1">{obs.text}</p>
-                            <div className="flex items-center gap-1">
-                              <button
-                                onClick={() => setEditingObservation(obs.id)}
-                                className="p-1 text-gray-500 hover:text-blue-600 transition-colors"
-                                title="Edit"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                              </button>
-                              <button
-                                onClick={() => handleDeleteObservation(obs.id)}
-                                className="p-1 text-gray-500 hover:text-red-600 transition-colors"
-                                title="Delete"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => handleIncrementTally(obs.id)}
-                              className="flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded transition-colors"
-                            >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                              </svg>
-                              Add Tally
-                            </button>
-                            <span className="text-xs font-semibold text-gray-600">
-                              {obs.tally} {obs.tally === 1 ? 'mention' : 'mentions'}
+                    return (
+                      <div key={session.id} className="border-b border-gray-200 pb-4 last:border-b-0">
+                        <div className="flex justify-between items-start mb-2">
+                          <div className="flex-1">
+                            <span className="font-medium text-gray-900">Participant {idx + 1}</span>
+                            <span className="text-xs text-gray-500 ml-2">
+                              {new Date(session.completed_at).toLocaleDateString()} {new Date(session.completed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                           </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
+                          {session.recording_url && (
+                            <button
+                              onClick={() => openVideoModalWithParticipant(session)}
+                              className="px-3 py-1 text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded transition-colors shadow-sm"
+                            >
+                              View Recording
+                            </button>
+                          )}
+                        </div>
 
-                {observations.length === 0 && (
-                  <p className="text-sm text-gray-500 text-center py-4">
-                    No observations yet. Add one above!
-                  </p>
-                )}
-              </div>
+                        {linkedObs.length > 0 && (
+                          <div className="mt-2 space-y-1">
+                            <span className="text-xs font-medium text-gray-600">Observations:</span>
+                            {linkedObs.map(obs => (
+                              <div key={obs.id} className="text-sm text-gray-700 pl-2">
+                                • {obs.text}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {surveyResponse && (
+                          <div className="mt-2">
+                            <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded border border-green-200">
+                              Preferred: {TASK_NAMES[surveyResponse.preferred_method]}
+                            </span>
+                            <p className="text-sm text-gray-600 mt-1 italic">"{surveyResponse.preference_reason}"</p>
+                          </div>
+                        )}
+
+                        <div className="mt-3 flex justify-start">
+                          <button
+                            onClick={() => handleDeleteSession(session.id)}
+                            className="p-1 text-red-600 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+                            title="Delete this participant"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1066,9 +1164,14 @@ const TestDetail = () => {
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-3">Record Final Decisions</h3>
             <p className="text-gray-600 mb-4">
-              Document your final decisions based on the test results. This will be saved and displayed when the project is marked as complete.
-              {finalDecisions && <span className="block mt-2 text-sm text-blue-600">You previously recorded decisions. You can update them below.</span>}
+              Document your final decisions based on the test results. When marked as complete:
             </p>
+            <ul className="list-disc list-inside text-sm text-gray-600 mb-4 space-y-1">
+              <li>Results will continue to show data from the "In Progress" phase</li>
+              <li>The launch test button stays active for team preview</li>
+              <li>New test sessions won't be displayed in results</li>
+            </ul>
+            {finalDecisions && <p className="text-sm text-blue-600 mb-4">You previously recorded decisions. You can update them below.</p>}
             <textarea
               value={finalDecisions}
               onChange={(e) => setFinalDecisions(e.target.value)}
@@ -1139,6 +1242,179 @@ const TestDetail = () => {
               >
                 Close
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Video Player Modal with Observations */}
+      {videoModalSession && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900">Screen Recording</h2>
+                <p className="text-sm text-gray-500">
+                  Participant {rawData?.sessions?.findIndex(s => s.id === videoModalSession.id) + 1} - {new Date(videoModalSession.completed_at).toLocaleDateString()}
+                </p>
+              </div>
+              <button
+                onClick={() => setVideoModalSession(null)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="flex-1 flex overflow-hidden">
+              {/* Left: Video Player (60%) */}
+              <div className="flex-1 bg-black flex items-center justify-center p-4">
+                <video
+                  src={videoModalSession.recording_url}
+                  controls
+                  autoPlay
+                  className="w-full h-full max-h-[calc(90vh-180px)] object-contain"
+                  controlsList="nodownload"
+                >
+                  Your browser does not support the video tag.
+                </video>
+              </div>
+
+              {/* Right: Observations Panel (40%) */}
+              <div className="w-96 border-l border-gray-200 bg-gray-50 p-4 flex flex-col overflow-hidden">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">Observations</h3>
+
+                {/* Add Observation Section */}
+                <div className="mb-4 relative">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Add Observation</label>
+                  <input
+                    value={selectedObservationText}
+                    onChange={(e) => {
+                      setSelectedObservationText(e.target.value);
+                      setShowObservationDropdown(true);
+                    }}
+                    onFocus={() => setShowObservationDropdown(true)}
+                    onBlur={() => {
+                      // Delay hiding to allow click on dropdown item
+                      setTimeout(() => setShowObservationDropdown(false), 200);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && selectedObservationText.trim()) {
+                        linkObservationToParticipant(videoModalSession.id, selectedObservationText);
+                        setShowObservationDropdown(false);
+                      } else if (e.key === 'Escape') {
+                        setShowObservationDropdown(false);
+                      }
+                    }}
+                    placeholder="Type or select observation..."
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+
+                  {/* Smart Dropdown */}
+                  {showObservationDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                      {(() => {
+                        const filtered = observations.filter(obs =>
+                          obs.text.toLowerCase().includes(selectedObservationText.toLowerCase())
+                        );
+                        const exactMatch = observations.some(obs =>
+                          obs.text.toLowerCase() === selectedObservationText.toLowerCase()
+                        );
+
+                        return (
+                          <>
+                            {filtered.length > 0 && (
+                              <>
+                                {filtered.map(obs => {
+                                  const isAlreadyLinked = obs.participantIds?.includes(videoModalSession.id);
+
+                                  return (
+                                    <button
+                                      key={obs.id}
+                                      onClick={() => {
+                                        if (!isAlreadyLinked) {
+                                          linkObservationToParticipant(videoModalSession.id, obs.text);
+                                          setShowObservationDropdown(false);
+                                        }
+                                      }}
+                                      disabled={isAlreadyLinked}
+                                      className={`w-full px-3 py-2 text-left text-sm transition-colors border-b border-gray-100 last:border-b-0 ${
+                                        isAlreadyLinked
+                                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                          : 'hover:bg-blue-50'
+                                      }`}
+                                    >
+                                      {obs.text}
+                                      <span className="text-xs text-gray-500 ml-2">
+                                        {isAlreadyLinked
+                                          ? '(already linked)'
+                                          : `(${obs.participantIds?.length || 0} linked)`
+                                        }
+                                      </span>
+                                    </button>
+                                  );
+                                })}
+                              </>
+                            )}
+                            {selectedObservationText.trim() && !exactMatch && (
+                              <button
+                                onClick={() => {
+                                  linkObservationToParticipant(videoModalSession.id, selectedObservationText);
+                                  setShowObservationDropdown(false);
+                                }}
+                                className="w-full px-3 py-2 text-left text-sm text-blue-700 font-medium hover:bg-blue-50 transition-colors border-t border-gray-200"
+                              >
+                                Add "{selectedObservationText}"
+                              </button>
+                            )}
+                            {filtered.length === 0 && !selectedObservationText.trim() && (
+                              <div className="px-3 py-2 text-sm text-gray-500 text-center">
+                                Start typing to add an observation
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </div>
+                  )}
+                </div>
+
+                {/* Linked Observations List */}
+                <div className="flex-1 overflow-hidden flex flex-col">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Linked Observations</h4>
+                  <div className="flex-1 overflow-y-auto space-y-2">
+                    {observations
+                      .filter(obs => obs.participantIds?.includes(videoModalSession.id))
+                      .map(obs => (
+                        <div key={obs.id} className="flex items-start justify-between gap-2 p-2 bg-white rounded border border-gray-200">
+                          <span className="text-sm text-gray-700 flex-1">{obs.text}</span>
+                          <button
+                            onClick={() => unlinkObservationFromParticipant(videoModalSession.id, obs.id)}
+                            className="text-gray-400 hover:text-red-600 transition-colors flex-shrink-0"
+                            title="Unlink observation"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    {observations.filter(obs => obs.participantIds?.includes(videoModalSession.id)).length === 0 && (
+                      <p className="text-sm text-gray-500 text-center py-4">
+                        No observations linked yet
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 border-t border-gray-200 bg-gray-50">
+              <p className="text-sm text-gray-600">
+                Use the video controls to play, pause, and adjust volume. Link observations to this participant while watching. Press ESC or click the X to close.
+              </p>
             </div>
           </div>
         </div>
