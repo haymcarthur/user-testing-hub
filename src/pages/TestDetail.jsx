@@ -724,18 +724,18 @@ const TestDetail = () => {
                               // Map 1-5 to 100-0% (CSS positioning)
                               const y = ((5 - difficulty) / 4) * 100;
 
-                              // Task colors for borders
+                              // Task colors for borders (red, blue, green)
                               const borderColors = {
-                                A: 'border-blue-600',
-                                B: 'border-orange-600',
-                                C: 'border-purple-600'
+                                A: 'border-red-600',
+                                B: 'border-blue-600',
+                                C: 'border-green-600'
                               };
 
-                              // Success/failure colors for fill
+                              // Success/failure colors for fill (red, blue, green)
                               const taskColors = {
-                                A: completion.actual_success ? 'bg-blue-600' : 'bg-blue-200',
-                                B: completion.actual_success ? 'bg-orange-600' : 'bg-orange-200',
-                                C: completion.actual_success ? 'bg-purple-600' : 'bg-purple-200'
+                                A: completion.actual_success ? 'bg-red-600' : 'bg-red-200',
+                                B: completion.actual_success ? 'bg-blue-600' : 'bg-blue-200',
+                                C: completion.actual_success ? 'bg-green-600' : 'bg-green-200'
                               };
 
                               // Show dot only if no task is hovered OR if this dot's task matches the hovered task
@@ -807,7 +807,7 @@ const TestDetail = () => {
                                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                     </svg>
                                   </button>
-                                  <div className={`w-3 h-3 rounded-full ${taskId === 'A' ? 'bg-blue-600' : taskId === 'B' ? 'bg-orange-600' : 'bg-purple-600'}`}></div>
+                                  <div className={`w-3 h-3 rounded-full ${taskId === 'A' ? 'bg-red-600' : taskId === 'B' ? 'bg-blue-600' : 'bg-green-600'}`}></div>
                                   <span className="font-medium text-gray-900">{TASK_NAMES[taskId]} (Average)</span>
                                 </div>
                                 <div className="flex gap-6 text-sm">
