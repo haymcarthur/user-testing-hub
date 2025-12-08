@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { fetchTestResults, calculateStatistics, deleteSession } from '../lib/supabase';
 
 // Task name mapping (Round 2: Red/Blue/Green Method)
@@ -48,6 +48,8 @@ const TestDetail = () => {
   const [videoModalSession, setVideoModalSession] = useState(null); // Changed from videoModalUrl to store full session
   const [selectedObservationText, setSelectedObservationText] = useState('');
   const [showObservationDropdown, setShowObservationDropdown] = useState(false);
+  const [playbackSpeed, setPlaybackSpeed] = useState(1);
+  const videoRef = useRef(null);
 
   // ESC key to close video modal
   useEffect(() => {
@@ -58,6 +60,20 @@ const TestDetail = () => {
     };
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
+  }, [videoModalSession]);
+
+  // Apply playback speed to video element
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = playbackSpeed;
+    }
+  }, [playbackSpeed]);
+
+  // Reset playback speed when video modal opens
+  useEffect(() => {
+    if (videoModalSession) {
+      setPlaybackSpeed(1);
+    }
   }, [videoModalSession]);
 
   // Load status from localStorage
@@ -1280,16 +1296,38 @@ const TestDetail = () => {
 
             <div className="flex-1 flex overflow-hidden">
               {/* Left: Video Player (60%) */}
-              <div className="flex-1 bg-black flex items-center justify-center p-4">
-                <video
-                  src={videoModalSession.recording_url}
-                  controls
-                  autoPlay
-                  className="w-full h-full max-h-[calc(90vh-180px)] object-contain"
-                  controlsList="nodownload"
-                >
-                  Your browser does not support the video tag.
-                </video>
+              <div className="flex-1 bg-black flex flex-col p-4">
+                {/* Playback Speed Controls */}
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-white text-sm font-medium">Speed:</span>
+                  {[0.5, 0.75, 1, 1.25, 1.5, 2].map(speed => (
+                    <button
+                      key={speed}
+                      onClick={() => setPlaybackSpeed(speed)}
+                      className={`px-3 py-1 text-sm font-medium rounded transition-colors ${
+                        playbackSpeed === speed
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      {speed}x
+                    </button>
+                  ))}
+                </div>
+
+                {/* Video Player */}
+                <div className="flex-1 flex items-center justify-center">
+                  <video
+                    ref={videoRef}
+                    src={videoModalSession.recording_url}
+                    controls
+                    autoPlay
+                    className="w-full h-full max-h-[calc(90vh-240px)] object-contain"
+                    controlsList="nodownload"
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
               </div>
 
               {/* Right: Observations Panel (40%) */}
