@@ -124,38 +124,57 @@ export function calculateStatistics(data) {
 // Delete a single session by ID
 export async function deleteSession(sessionId) {
   try {
+    console.log('deleteSession: Starting delete for session ID:', sessionId);
+
     // Delete data from all related tables
+    console.log('deleteSession: Deleting validation data...');
     const { error: validationError } = await supabase
       .from('task_validation_data')
       .delete()
       .eq('session_id', sessionId);
 
-    if (validationError) throw validationError;
+    if (validationError) {
+      console.error('deleteSession: Validation delete error:', validationError);
+      throw validationError;
+    }
 
+    console.log('deleteSession: Deleting survey responses...');
     const { error: surveyError } = await supabase
       .from('survey_responses')
       .delete()
       .eq('session_id', sessionId);
 
-    if (surveyError) throw surveyError;
+    if (surveyError) {
+      console.error('deleteSession: Survey delete error:', surveyError);
+      throw surveyError;
+    }
 
+    console.log('deleteSession: Deleting task completions...');
     const { error: taskError } = await supabase
       .from('task_completions')
       .delete()
       .eq('session_id', sessionId);
 
-    if (taskError) throw taskError;
+    if (taskError) {
+      console.error('deleteSession: Task delete error:', taskError);
+      throw taskError;
+    }
 
+    console.log('deleteSession: Deleting test session...');
     const { error: sessionsDeleteError } = await supabase
       .from('test_sessions')
       .delete()
       .eq('id', sessionId);
 
-    if (sessionsDeleteError) throw sessionsDeleteError;
+    if (sessionsDeleteError) {
+      console.error('deleteSession: Session delete error:', sessionsDeleteError);
+      throw sessionsDeleteError;
+    }
 
+    console.log('deleteSession: All deletes completed successfully');
     return { success: true, message: 'Session deleted successfully' };
   } catch (error) {
-    console.error('Error deleting session:', error);
+    console.error('deleteSession: Error deleting session:', error);
     throw error;
   }
 }

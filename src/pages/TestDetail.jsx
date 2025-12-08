@@ -398,8 +398,11 @@ const TestDetail = () => {
   const handleDeleteSession = async (sessionId) => {
     if (!confirm('Are you sure you want to delete this participant\'s data? This cannot be undone.')) return;
 
+    console.log('Starting delete for session:', sessionId);
     try {
-      await deleteSession(sessionId);
+      console.log('Calling deleteSession...');
+      const result = await deleteSession(sessionId);
+      console.log('Delete result:', result);
 
       // Remove observations linked to this session
       const updatedObservations = observations.map(obs => ({
@@ -410,10 +413,14 @@ const TestDetail = () => {
 
       // Reload results
       const statusFilter = currentStatus === 'complete' ? 'in progress' : currentStatus;
+      console.log('Reloading results with status:', statusFilter);
       const data = await fetchTestResults(testId, statusFilter, testRoundFilter);
       const statistics = calculateStatistics(data);
       setStats(statistics);
       setRawData(data);
+
+      console.log('Delete completed successfully');
+      alert('Participant deleted successfully');
     } catch (error) {
       console.error('Error deleting session:', error);
       alert('Failed to delete session: ' + error.message);
