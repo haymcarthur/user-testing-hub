@@ -1046,7 +1046,17 @@ const TestDetail = () => {
                       <div key={session.id} className="border-b border-gray-200 pb-4 last:border-b-0">
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex-1">
-                            <span className="font-medium text-gray-900">Participant {idx + 1}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium text-gray-900">Participant {idx + 1}</span>
+                              {session.recording_error && !session.recording_url && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded" title="Recording failed">
+                                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                  </svg>
+                                  No Recording
+                                </span>
+                              )}
+                            </div>
                             <span className="text-xs text-gray-500 ml-2">
                               {new Date(session.completed_at).toLocaleDateString()} {new Date(session.completed_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
@@ -1060,6 +1070,23 @@ const TestDetail = () => {
                             </button>
                           )}
                         </div>
+
+                        {/* Recording Error Details */}
+                        {session.recording_error && !session.recording_url && (
+                          <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs">
+                            <div className="font-medium text-red-900 mb-1">Recording Error:</div>
+                            <div className="text-red-700">
+                              {(() => {
+                                try {
+                                  const errorData = JSON.parse(session.recording_error);
+                                  return errorData.message || errorData.error || 'Unknown error';
+                                } catch {
+                                  return session.recording_error;
+                                }
+                              })()}
+                            </div>
+                          </div>
+                        )}
 
                         {linkedObs.length > 0 && (
                           <div className="mt-2 space-y-1">
