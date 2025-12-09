@@ -383,7 +383,8 @@ const TestDetail = () => {
       obs.id === observationId
         ? { ...obs, participantIds: obs.participantIds.filter(id => id !== sessionId) }
         : obs
-    ).filter(obs => obs.participantIds.length > 0); // Remove observations with no participants
+    );
+    // Keep observations even if they have no participants (they're still useful notes)
 
     saveObservations(updatedObs);
   };
@@ -420,11 +421,12 @@ const TestDetail = () => {
       const result = await deleteSession(sessionId);
       console.log('Delete result:', result);
 
-      // Remove observations linked to this session
+      // Unlink this participant from observations (but keep the observations)
       const updatedObservations = observations.map(obs => ({
         ...obs,
         participantIds: obs.participantIds.filter(id => id !== sessionId)
-      })).filter(obs => obs.participantIds.length > 0);
+      }));
+      // Don't delete observations with no participants - they're still useful notes
       saveObservations(updatedObservations);
 
       // Small delay to ensure Supabase replication completes
@@ -926,26 +928,16 @@ const TestDetail = () => {
                             const count = filteredParticipantIds.length;
                             return { ...obs, count };
                           })
-                          .filter(obs => obs.count > 0)
                           .sort((a, b) => b.count - a.count)
                           .map(obs => (
                             <div key={obs.id} className="flex items-center justify-between bg-gray-50 p-3 rounded">
                               <span className="text-sm text-gray-700 flex-1">{obs.text}</span>
-                              <span className="text-sm font-medium text-gray-900 ml-4">
+                              <span className={`text-sm font-medium ml-4 ${obs.count === 0 ? 'text-gray-500' : 'text-gray-900'}`}>
                                 {obs.count} {obs.count === 1 ? 'participant' : 'participants'}
                               </span>
                             </div>
                           ))}
                       </div>
-                      {observations.every(obs => {
-                        const filteredSessionIds = rawData.sessions.map(s => s.id);
-                        const filteredParticipantIds = (obs.participantIds || []).filter(id => filteredSessionIds.includes(id));
-                        return filteredParticipantIds.length === 0;
-                      }) && (
-                        <p className="text-sm text-gray-500 text-center py-4">
-                          No observations linked to participants yet
-                        </p>
-                      )}
                     </div>
                   )}
                 </div>
