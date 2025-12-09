@@ -31,11 +31,23 @@ export async function fetchTestResults(testId = 'highlights', projectStatus = nu
 
     if (sessionsError) throw sessionsError;
 
+    // If no sessions match the filters, return empty data
+    if (!sessions || sessions.length === 0) {
+      return {
+        sessions: [],
+        taskCompletions: [],
+        surveyResponses: [],
+        validationData: [],
+      };
+    }
+
+    const sessionIds = sessions.map(s => s.id);
+
     // Fetch all task completions
     const { data: taskCompletions, error: taskError } = await supabase
       .from('task_completions')
       .select('*')
-      .in('session_id', sessions.map(s => s.id));
+      .in('session_id', sessionIds);
 
     if (taskError) throw taskError;
 
@@ -43,7 +55,7 @@ export async function fetchTestResults(testId = 'highlights', projectStatus = nu
     const { data: surveyResponses, error: surveyError } = await supabase
       .from('survey_responses')
       .select('*')
-      .in('session_id', sessions.map(s => s.id));
+      .in('session_id', sessionIds);
 
     if (surveyError) throw surveyError;
 
@@ -51,7 +63,7 @@ export async function fetchTestResults(testId = 'highlights', projectStatus = nu
     const { data: validationData, error: validationError } = await supabase
       .from('task_validation_data')
       .select('*')
-      .in('session_id', sessions.map(s => s.id));
+      .in('session_id', sessionIds);
 
     if (validationError) throw validationError;
 
@@ -99,15 +111,23 @@ export function calculateStatistics(data) {
   const sessionIds = sessions.map(s => s.id);
   const filteredSurveyResponses = surveyResponses.filter(sr => sessionIds.includes(sr.session_id));
 
+  console.log('[STATS] Total sessions:', sessions.length);
+  console.log('[STATS] Session IDs:', sessionIds);
+  console.log('[STATS] Survey responses received:', surveyResponses.length);
+  console.log('[STATS] Filtered survey responses:', filteredSurveyResponses.length);
+  console.log('[STATS] Survey response session IDs:', surveyResponses.map(sr => sr.session_id));
+
   const preferences = {};
   filteredSurveyResponses.forEach(sr => {
     preferences[sr.preferred_method] = (preferences[sr.preferred_method] || 0) + 1;
   });
 
+  console.log('[STATS] Preference counts:', preferences);
+
   const preferenceStats = Object.entries(preferences).map(([method, count]) => ({
     method: method, // Keep as 'A', 'B', 'C' - UI will map to display names
     count,
-    percentage: Math.round((count / filteredSurveyResponses.length) * 100),
+    percentage: filteredSurveyResponses.length > 0 ? Math.round((count / filteredSurveyResponses.length) * 100) : 0,
   }));
 
   // Get preference reasons - only from filtered sessions
