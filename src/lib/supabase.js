@@ -117,8 +117,21 @@ export function calculateStatistics(data) {
   console.log('[STATS] Filtered survey responses:', filteredSurveyResponses.length);
   console.log('[STATS] Survey response session IDs:', surveyResponses.map(sr => sr.session_id));
 
-  const preferences = {};
+  // IMPORTANT: Deduplicate survey responses - only keep the most recent one per session
+  // This handles cases where survey was accidentally submitted multiple times
+  const surveyResponsesBySession = new Map();
   filteredSurveyResponses.forEach(sr => {
+    if (!surveyResponsesBySession.has(sr.session_id) ||
+        new Date(sr.created_at) > new Date(surveyResponsesBySession.get(sr.session_id).created_at)) {
+      surveyResponsesBySession.set(sr.session_id, sr);
+    }
+  });
+  const uniqueSurveyResponses = Array.from(surveyResponsesBySession.values());
+
+  console.log('[STATS] Unique survey responses (after deduplication):', uniqueSurveyResponses.length);
+
+  const preferences = {};
+  uniqueSurveyResponses.forEach(sr => {
     preferences[sr.preferred_method] = (preferences[sr.preferred_method] || 0) + 1;
   });
 
@@ -127,11 +140,11 @@ export function calculateStatistics(data) {
   const preferenceStats = Object.entries(preferences).map(([method, count]) => ({
     method: method, // Keep as 'A', 'B', 'C' - UI will map to display names
     count,
-    percentage: filteredSurveyResponses.length > 0 ? Math.round((count / filteredSurveyResponses.length) * 100) : 0,
+    percentage: uniqueSurveyResponses.length > 0 ? Math.round((count / uniqueSurveyResponses.length) * 100) : 0,
   }));
 
-  // Get preference reasons - only from filtered sessions
-  const preferenceReasons = filteredSurveyResponses.map(sr => ({
+  // Get preference reasons - only from unique survey responses
+  const preferenceReasons = uniqueSurveyResponses.map(sr => ({
     method: sr.preferred_method,
     reason: sr.preference_reason,
   }));
