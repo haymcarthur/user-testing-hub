@@ -95,20 +95,23 @@ export function calculateStatistics(data) {
     }
   });
 
-  // Method preferences
+  // Method preferences - only count preferences from filtered sessions
+  const sessionIds = sessions.map(s => s.id);
+  const filteredSurveyResponses = surveyResponses.filter(sr => sessionIds.includes(sr.session_id));
+
   const preferences = {};
-  surveyResponses.forEach(sr => {
+  filteredSurveyResponses.forEach(sr => {
     preferences[sr.preferred_method] = (preferences[sr.preferred_method] || 0) + 1;
   });
 
   const preferenceStats = Object.entries(preferences).map(([method, count]) => ({
     method: method, // Keep as 'A', 'B', 'C' - UI will map to display names
     count,
-    percentage: Math.round((count / surveyResponses.length) * 100),
+    percentage: Math.round((count / filteredSurveyResponses.length) * 100),
   }));
 
-  // Get preference reasons
-  const preferenceReasons = surveyResponses.map(sr => ({
+  // Get preference reasons - only from filtered sessions
+  const preferenceReasons = filteredSurveyResponses.map(sr => ({
     method: sr.preferred_method,
     reason: sr.preference_reason,
   }));

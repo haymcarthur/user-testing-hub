@@ -1101,7 +1101,11 @@ const TestDetail = () => {
 
                         {surveyResponse && (
                           <div className="mt-2">
-                            <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded border border-green-200">
+                            <span className={`inline-block px-2 py-1 text-xs font-medium rounded border ${
+                              surveyResponse.preferred_method === 'A' ? 'bg-red-100 text-red-800 border-red-200' :
+                              surveyResponse.preferred_method === 'B' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                              'bg-green-100 text-green-800 border-green-200'
+                            }`}>
                               Preferred: {TASK_NAMES[surveyResponse.preferred_method]}
                             </span>
                             <p className="text-sm text-gray-600 mt-1 italic">"{surveyResponse.preference_reason}"</p>
