@@ -1,6 +1,14 @@
 import { useParams, Link } from 'react-router-dom';
 import { useState, useEffect, useRef } from 'react';
-import { fetchTestResults, calculateStatistics, deleteSession } from '../lib/supabase';
+import {
+  fetchTestResults,
+  calculateStatistics,
+  deleteSession,
+  fetchObservations,
+  saveObservation,
+  updateObservation,
+  deleteObservation
+} from '../lib/supabase';
 
 // Task name mapping (Round 2: Red/Blue/Green Method)
 const TASK_NAMES = {
@@ -24,6 +32,18 @@ const testData = {
     participants: 0,
     url: 'https://highlight-user-test.vercel.app/',
   },
+  'index-creation': {
+    title: 'Index Creation Study',
+    description: 'Testing the interface for adding people to household groups in census records',
+    objective: 'Evaluate the usability of the interface for adding Gary Fadden and Ronald Fadden to Edgar Fadden\'s household in the 1950 census.',
+    tasks: [
+      'Add Gary Fadden and Ronald Fadden to Edgar Fadden\'s household',
+    ],
+    created: 'December 2025',
+    status: 'planning',
+    participants: 0,
+    url: 'https://index-creation-haylee-mcarthurs-projects.vercel.app/',
+  },
 };
 
 const TestDetail = () => {
@@ -36,6 +56,7 @@ const TestDetail = () => {
   const [showRawData, setShowRawData] = useState(false);
   const [expandedTasks, setExpandedTasks] = useState({});
   const [hoveredTask, setHoveredTask] = useState(null);
+  const [hoveredParticipant, setHoveredParticipant] = useState(null);
   const [confirmModal, setConfirmModal] = useState(null);
   const [currentStatus, setCurrentStatus] = useState('planning');
   const [statusLoaded, setStatusLoaded] = useState(false);
@@ -119,39 +140,78 @@ const TestDetail = () => {
     }
   }, [testId]);
 
-  // Load observations from localStorage
+  // Load observations from database (with localStorage migration)
   useEffect(() => {
-    const saved = localStorage.getItem('projectObservations');
-    if (saved) {
+    async function loadObservations() {
       try {
-        const allObservations = JSON.parse(saved);
-        if (allObservations[testId]) {
-          setObservations(allObservations[testId]);
+        // First, try to load from database
+        const dbObservations = await fetchObservations(testId);
+
+        // Map database format to component format
+        const mappedObservations = dbObservations.map(obs => ({
+          id: obs.id,
+          text: obs.text,
+          participantIds: obs.participant_ids || [],
+          createdAt: obs.created_at,
+        }));
+
+        setObservations(mappedObservations);
+
+        // One-time migration: check if there are observations in localStorage that aren't in database
+        const localStorageKey = 'projectObservations';
+        const saved = localStorage.getItem(localStorageKey);
+        if (saved) {
+          try {
+            const allLocalObservations = JSON.parse(saved);
+            const localObservations = allLocalObservations[testId] || [];
+
+            // Check if there are any localStorage observations not in database
+            const dbTexts = new Set(mappedObservations.map(obs => obs.text));
+            const newObservations = localObservations.filter(obs => !dbTexts.has(obs.text));
+
+            if (newObservations.length > 0) {
+              console.log(`Migrating ${newObservations.length} observations from localStorage to database...`);
+
+              // Save each new observation to database
+              for (const obs of newObservations) {
+                await saveObservation(testId, {
+                  text: obs.text,
+                  participantIds: obs.participantIds || [],
+                  createdAt: obs.createdAt || new Date().toISOString(),
+                });
+              }
+
+              console.log('Migration complete!');
+
+              // Reload observations from database
+              const updatedDbObservations = await fetchObservations(testId);
+              const updatedMappedObservations = updatedDbObservations.map(obs => ({
+                id: obs.id,
+                text: obs.text,
+                participantIds: obs.participant_ids || [],
+                createdAt: obs.created_at,
+              }));
+              setObservations(updatedMappedObservations);
+            }
+
+            // Clear localStorage after successful migration (keep it for other tests though)
+            delete allLocalObservations[testId];
+            localStorage.setItem(localStorageKey, JSON.stringify(allLocalObservations));
+          } catch (err) {
+            console.error('Error during localStorage migration:', err);
+          }
         }
       } catch (err) {
         console.error('Error loading observations:', err);
       }
     }
+
+    if (testId) {
+      loadObservations();
+    }
   }, [testId]);
 
-  // Migrate old observation format to new format (one-time migration)
-  useEffect(() => {
-    if (observations.length === 0) return;
-
-    const needsMigration = observations.some(obs => 'tally' in obs && !('participantIds' in obs));
-
-    if (needsMigration) {
-      console.log('Migrating observations from old format to new format...');
-      const migratedObs = observations.map(obs => ({
-        id: obs.id,
-        text: obs.text,
-        participantIds: [], // Start with no linked participants
-        createdAt: obs.createdAt,
-      }));
-      saveObservations(migratedObs);
-      console.log('Migration complete!');
-    }
-  }, [observations.length]); // Only run when observations length changes
+  // No longer needed - observations are now stored in database
 
   useEffect(() => {
     async function loadResults() {
@@ -160,10 +220,10 @@ const TestDetail = () => {
         // When status is "complete", show results from "in progress" phase
         // This allows team members to try the test without their results being shown
         const statusFilter = currentStatus === 'complete' ? 'in progress' : currentStatus;
-        console.log('Loading results with filters:', { statusFilter, testRoundFilter, currentStatus });
+        console.log('Loading results with filters:', { testId, statusFilter, testRoundFilter, currentStatus });
         const data = await fetchTestResults(testId, statusFilter, testRoundFilter);
         console.log('Loaded sessions:', data.sessions?.length, 'sessions');
-        console.log('Session details:', data.sessions?.map(s => ({ id: s.id, status: s.project_status, round: s.test_round })));
+        console.log('Session details:', data.sessions?.map(s => ({ id: s.id, status: s.project_status, round: s.test_round, test_id: s.test_id })));
         const statistics = calculateStatistics(data);
         setStats(statistics);
         setRawData(data);
@@ -319,74 +379,89 @@ const TestDetail = () => {
     }
   };
 
-  const saveObservations = (updatedObservations) => {
+  // Reload observations from database
+  const reloadObservations = async () => {
     try {
-      const saved = localStorage.getItem('projectObservations');
-      const allObservations = saved ? JSON.parse(saved) : {};
-      allObservations[testId] = updatedObservations;
-      localStorage.setItem('projectObservations', JSON.stringify(allObservations));
-      setObservations(updatedObservations);
+      const dbObservations = await fetchObservations(testId);
+      const mappedObservations = dbObservations.map(obs => ({
+        id: obs.id,
+        text: obs.text,
+        participantIds: obs.participant_ids || [],
+        createdAt: obs.created_at,
+      }));
+      setObservations(mappedObservations);
     } catch (err) {
-      console.error('Error saving observations:', err);
-      alert('Failed to save observations: ' + err.message);
+      console.error('Error reloading observations:', err);
+      alert('Failed to reload observations: ' + err.message);
     }
   };
 
-  const handleAddObservation = () => {
+  const handleAddObservation = async () => {
     if (!newObservation.trim()) return;
 
-    const observation = {
-      id: Date.now(),
-      text: newObservation.trim(),
-      participantIds: [], // Start with no linked participants
-      createdAt: new Date().toISOString(),
-    };
+    try {
+      await saveObservation(testId, {
+        text: newObservation.trim(),
+        participantIds: [], // Start with no linked participants
+        createdAt: new Date().toISOString(),
+      });
 
-    const updatedObservations = [...observations, observation];
-    saveObservations(updatedObservations);
-    setNewObservation('');
+      setNewObservation('');
+      await reloadObservations();
+    } catch (err) {
+      console.error('Error adding observation:', err);
+      alert('Failed to add observation: ' + err.message);
+    }
   };
 
   // Link observation to participant (create if doesn't exist)
-  const linkObservationToParticipant = (sessionId, observationText) => {
+  const linkObservationToParticipant = async (sessionId, observationText) => {
     if (!observationText.trim()) return;
 
-    const existingObs = observations.find(obs => obs.text.toLowerCase() === observationText.trim().toLowerCase());
+    try {
+      const existingObs = observations.find(obs => obs.text.toLowerCase() === observationText.trim().toLowerCase());
 
-    if (existingObs) {
-      // Add participant to existing observation
-      if (!existingObs.participantIds.includes(sessionId)) {
-        const updatedObs = observations.map(obs =>
-          obs.id === existingObs.id
-            ? { ...obs, participantIds: [...obs.participantIds, sessionId] }
-            : obs
-        );
-        saveObservations(updatedObs);
+      if (existingObs) {
+        // Add participant to existing observation
+        if (!existingObs.participantIds.includes(sessionId)) {
+          await updateObservation(existingObs.id, {
+            participantIds: [...existingObs.participantIds, sessionId]
+          });
+        }
+      } else {
+        // Create new observation
+        await saveObservation(testId, {
+          text: observationText.trim(),
+          participantIds: [sessionId],
+          createdAt: new Date().toISOString(),
+        });
       }
-    } else {
-      // Create new observation
-      const newObs = {
-        id: Date.now(),
-        text: observationText.trim(),
-        participantIds: [sessionId],
-        createdAt: new Date().toISOString(),
-      };
-      saveObservations([...observations, newObs]);
-    }
 
-    setSelectedObservationText(''); // Clear input
+      setSelectedObservationText(''); // Clear input
+      await reloadObservations();
+    } catch (err) {
+      console.error('Error linking observation to participant:', err);
+      alert('Failed to link observation: ' + err.message);
+    }
   };
 
   // Unlink observation from participant
-  const unlinkObservationFromParticipant = (sessionId, observationId) => {
-    const updatedObs = observations.map(obs =>
-      obs.id === observationId
-        ? { ...obs, participantIds: obs.participantIds.filter(id => id !== sessionId) }
-        : obs
-    );
-    // Keep observations even if they have no participants (they're still useful notes)
+  const unlinkObservationFromParticipant = async (sessionId, observationId) => {
+    try {
+      const obs = observations.find(o => o.id === observationId);
+      if (!obs) return;
 
-    saveObservations(updatedObs);
+      const updatedParticipantIds = obs.participantIds.filter(id => id !== sessionId);
+
+      await updateObservation(observationId, {
+        participantIds: updatedParticipantIds
+      });
+
+      await reloadObservations();
+    } catch (err) {
+      console.error('Error unlinking observation from participant:', err);
+      alert('Failed to unlink observation: ' + err.message);
+    }
   };
 
   // Open video modal with participant context
@@ -395,21 +470,32 @@ const TestDetail = () => {
     setSelectedObservationText(''); // Clear observation input when opening
   };
 
-  const handleEditObservation = (id, newText) => {
+  const handleEditObservation = async (id, newText) => {
     if (!newText.trim()) return;
 
-    const updatedObservations = observations.map(obs =>
-      obs.id === id ? { ...obs, text: newText.trim() } : obs
-    );
-    saveObservations(updatedObservations);
-    setEditingObservation(null);
+    try {
+      await updateObservation(id, {
+        text: newText.trim()
+      });
+
+      setEditingObservation(null);
+      await reloadObservations();
+    } catch (err) {
+      console.error('Error editing observation:', err);
+      alert('Failed to edit observation: ' + err.message);
+    }
   };
 
-  const handleDeleteObservation = (id) => {
+  const handleDeleteObservation = async (id) => {
     if (!confirm('Are you sure you want to delete this observation?')) return;
 
-    const updatedObservations = observations.filter(obs => obs.id !== id);
-    saveObservations(updatedObservations);
+    try {
+      await deleteObservation(id);
+      await reloadObservations();
+    } catch (err) {
+      console.error('Error deleting observation:', err);
+      alert('Failed to delete observation: ' + err.message);
+    }
   };
 
   const handleDeleteSession = async (sessionId) => {
@@ -422,12 +508,17 @@ const TestDetail = () => {
       console.log('Delete result:', result);
 
       // Unlink this participant from observations (but keep the observations)
-      const updatedObservations = observations.map(obs => ({
-        ...obs,
-        participantIds: obs.participantIds.filter(id => id !== sessionId)
-      }));
-      // Don't delete observations with no participants - they're still useful notes
-      saveObservations(updatedObservations);
+      for (const obs of observations) {
+        if (obs.participantIds.includes(sessionId)) {
+          const updatedParticipantIds = obs.participantIds.filter(id => id !== sessionId);
+          await updateObservation(obs.id, {
+            participantIds: updatedParticipantIds
+          });
+        }
+      }
+
+      // Reload observations from database
+      await reloadObservations();
 
       // Small delay to ensure Supabase replication completes
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -550,8 +641,8 @@ const TestDetail = () => {
                       className="px-3 py-1 text-sm font-medium border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     >
                       <option value="all">All Results</option>
-                      <option value="1">Round 1 (Fixed Order)</option>
-                      <option value="2">Round 2 (Randomized)</option>
+                      <option value="1">Round 1 {testId === 'index-creation' ? '' : '(Fixed Order)'}</option>
+                      {testId !== 'index-creation' && <option value="2">Round 2 (Randomized)</option>}
                     </select>
                   </div>
                   <div className="flex items-center gap-2">
@@ -600,67 +691,71 @@ const TestDetail = () => {
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3">Task Performance</h3>
 
-                    {/* Average Time Bar Graph */}
-                    <div className="mb-6">
-                      <h4 className="text-sm font-medium text-gray-700 mb-3">Average Time (seconds)</h4>
-                      <div className="space-y-3">
-                        {['A', 'B', 'C'].map(taskId => {
-                          const taskStat = stats.taskStats[taskId];
-                          if (!taskStat) return null;
+                    {/* Average Time Bar Graph - Only for Highlights test */}
+                    {testId !== 'index-creation' && (
+                      <div className="mb-6">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Average Time (seconds)</h4>
+                        <div className="space-y-3">
+                          {['A', 'B', 'C'].map(taskId => {
+                            const taskStat = stats.taskStats[taskId];
+                            if (!taskStat) return null;
 
-                          const maxTime = Math.max(...Object.values(stats.taskStats).map(t => t.avgTimeSeconds));
-                          const widthPercent = (taskStat.avgTimeSeconds / maxTime) * 100;
+                            const maxTime = Math.max(...Object.values(stats.taskStats).map(t => t.avgTimeSeconds));
+                            const widthPercent = (taskStat.avgTimeSeconds / maxTime) * 100;
 
-                          return (
-                            <div key={taskId}>
-                              <div className="flex items-center gap-3 mb-1">
-                                <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[taskId]}</span>
-                                <div className="flex-1 bg-gray-200 rounded h-8 relative">
-                                  <div
-                                    className="bg-blue-600 h-8 rounded flex items-center px-3"
-                                    style={{ width: `${widthPercent}%` }}
-                                  >
-                                    <span className="text-sm font-medium text-white">{taskStat.avgTimeSeconds}s</span>
+                            return (
+                              <div key={taskId}>
+                                <div className="flex items-center gap-3 mb-1">
+                                  <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[taskId]}</span>
+                                  <div className="flex-1 bg-gray-200 rounded h-8 relative">
+                                    <div
+                                      className="bg-blue-600 h-8 rounded flex items-center px-3"
+                                      style={{ width: `${widthPercent}%` }}
+                                    >
+                                      <span className="text-sm font-medium text-white">{taskStat.avgTimeSeconds}s</span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
-                    {/* Average Difficulty Bar Graph */}
-                    <div className="mb-6">
-                      <h4 className="text-sm font-medium text-gray-700 mb-3">Average Difficulty (1 = Very Difficult, 5 = Very Easy)</h4>
-                      <div className="space-y-3">
-                        {['A', 'B', 'C'].map(taskId => {
-                          const taskStat = stats.taskStats[taskId];
-                          if (!taskStat || !taskStat.avgDifficulty) return null;
+                    {/* Average Difficulty Bar Graph - Only for Highlights test */}
+                    {testId !== 'index-creation' && (
+                      <div className="mb-6">
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">Average Difficulty (1 = Very Difficult, 5 = Very Easy)</h4>
+                        <div className="space-y-3">
+                          {['A', 'B', 'C'].map(taskId => {
+                            const taskStat = stats.taskStats[taskId];
+                            if (!taskStat || !taskStat.avgDifficulty) return null;
 
-                          const avgDifficultyNum = typeof taskStat.avgDifficulty === 'string'
-                            ? parseFloat(taskStat.avgDifficulty)
-                            : taskStat.avgDifficulty;
-                          const widthPercent = (avgDifficultyNum / 5) * 100;
+                            const avgDifficultyNum = typeof taskStat.avgDifficulty === 'string'
+                              ? parseFloat(taskStat.avgDifficulty)
+                              : taskStat.avgDifficulty;
+                            const widthPercent = (avgDifficultyNum / 5) * 100;
 
-                          return (
-                            <div key={taskId}>
-                              <div className="flex items-center gap-3 mb-1">
-                                <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[taskId]}</span>
-                                <div className="flex-1 bg-gray-200 rounded h-8 relative">
-                                  <div
-                                    className="bg-green-600 h-8 rounded flex items-center px-3"
-                                    style={{ width: `${widthPercent}%` }}
-                                  >
-                                    <span className="text-sm font-medium text-white">{avgDifficultyNum.toFixed(1)} / 5</span>
+                            return (
+                              <div key={taskId}>
+                                <div className="flex items-center gap-3 mb-1">
+                                  <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[taskId]}</span>
+                                  <div className="flex-1 bg-gray-200 rounded h-8 relative">
+                                    <div
+                                      className="bg-green-600 h-8 rounded flex items-center px-3"
+                                      style={{ width: `${widthPercent}%` }}
+                                    >
+                                      <span className="text-sm font-medium text-white">{avgDifficultyNum.toFixed(1)} / 5</span>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     {/* Time vs Difficulty Matrix */}
                     <div className="mb-6">
@@ -756,22 +851,50 @@ const TestDetail = () => {
                                 C: completion.actual_success ? 'bg-green-600' : 'bg-green-200'
                               };
 
-                              // Show dot only if no task is hovered OR if this dot's task matches the hovered task
-                              const isVisible = !hoveredTask || hoveredTask === completion.task_id;
+                              // Show dot visibility based on hover state
+                              let isVisible = true;
+                              let isHighlighted = false;
+
+                              if (testId === 'index-creation') {
+                                // For index-creation: highlight hovered participant
+                                if (hoveredParticipant) {
+                                  isHighlighted = completion.session_id === hoveredParticipant;
+                                }
+                              } else {
+                                // For highlights: show only dots matching hovered task
+                                isVisible = !hoveredTask || hoveredTask === completion.task_id;
+                              }
+
+                              // For index-creation, use black dots normally, red when hovered
+                              let dotColor, dotBorder;
+                              if (testId === 'index-creation') {
+                                // Successful: solid fill, Unsuccessful: outline only
+                                if (completion.actual_success) {
+                                  dotColor = isHighlighted ? 'bg-red-600' : 'bg-black';
+                                  dotBorder = 'border-0';
+                                } else {
+                                  dotColor = 'bg-white';
+                                  dotBorder = isHighlighted ? 'border-2 border-red-600' : 'border-2 border-black';
+                                }
+                              } else {
+                                dotColor = taskColors[completion.task_id];
+                                dotBorder = `${borderColors[completion.task_id]} border-2`;
+                              }
 
                               return (
                                 <div
                                   key={`${completion.session_id}-${completion.task_id}-${index}`}
-                                  className="absolute transition-opacity duration-200"
+                                  className="absolute transition-all duration-200"
                                   style={{
                                     left: `${x}%`,
                                     top: `${y}%`,
-                                    transform: 'translate(-50%, -50%)',
-                                    opacity: isVisible ? 1 : 0
+                                    transform: `translate(-50%, -50%) ${isHighlighted ? 'scale(1.3)' : 'scale(1)'}`,
+                                    opacity: isVisible ? 1 : 0,
+                                    zIndex: isHighlighted ? 10 : 1
                                   }}
                                   title={`${TASK_NAMES[completion.task_id]}: ${timeSpent}s, Difficulty ${difficulty}/5, ${completion.actual_success ? 'Success' : 'Failure'}`}
                                 >
-                                  <div className={`w-3 h-3 ${taskColors[completion.task_id]} rounded-full shadow-md ${borderColors[completion.task_id]} border-2`}>
+                                  <div className={`w-3 h-3 ${dotColor} rounded-full shadow-md ${dotBorder}`}>
                                   </div>
                                 </div>
                               );
@@ -792,103 +915,156 @@ const TestDetail = () => {
                         </div>
                       </div>
 
-                      {/* Detailed Results - Averages with Expandable Individual Results */}
-                      <div className="text-sm space-y-2">
-                        {['A', 'B', 'C'].map(taskId => {
-                          const taskStat = stats.taskStats[taskId];
-                          if (!taskStat) return null;
+                      {/* Detailed Results */}
+                      {testId === 'index-creation' ? (
+                        /* Index Creation: Flat participant list with hover */
+                        <div className="text-sm space-y-2">
+                          <div className="border-t border-gray-200 pt-3">
+                            <h5 className="text-sm font-medium text-gray-700 mb-3">All Participants</h5>
+                            <div className="space-y-2">
+                              {rawData?.taskCompletions?.map((completion, idx) => {
+                                const session = rawData?.sessions?.find(s => s.id === completion.session_id);
+                                const isHovered = hoveredParticipant === completion.session_id;
 
-                          const taskCompletions = rawData?.taskCompletions?.filter(tc => tc.task_id === taskId) || [];
-                          const isExpanded = expandedTasks[taskId];
-
-                          return (
-                            <div
-                              key={taskId}
-                              className="border-t border-gray-200 py-2"
-                              onMouseEnter={() => setHoveredTask(taskId)}
-                              onMouseLeave={() => setHoveredTask(null)}
-                            >
-                              {/* Average Row */}
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={() => setExpandedTasks(prev => ({ ...prev, [taskId]: !prev[taskId] }))}
-                                    className="text-gray-600 hover:text-gray-900"
-                                    aria-label={isExpanded ? 'Collapse' : 'Expand'}
+                                return (
+                                  <div
+                                    key={`${completion.session_id}-${idx}`}
+                                    className={`flex items-center justify-between text-xs p-2 rounded transition-colors cursor-pointer ${
+                                      isHovered ? 'bg-blue-100 border border-blue-300' : 'bg-gray-50 border border-gray-200'
+                                    }`}
+                                    onMouseEnter={() => setHoveredParticipant(completion.session_id)}
+                                    onMouseLeave={() => setHoveredParticipant(null)}
                                   >
-                                    <svg
-                                      className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                    </svg>
-                                  </button>
-                                  <div className={`w-3 h-3 rounded-full ${taskId === 'A' ? 'bg-red-600' : taskId === 'B' ? 'bg-blue-600' : 'bg-green-600'}`}></div>
-                                  <span className="font-medium text-gray-900">{TASK_NAMES[taskId]} (Average)</span>
-                                </div>
-                                <div className="flex gap-6 text-sm">
-                                  <div>
-                                    <span className="text-gray-600">Self-Reported: </span>
-                                    <span className="font-medium">{taskStat.selfReportedSuccessRate}%</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-gray-600">Actual: </span>
-                                    <span className="font-medium">{taskStat.actualSuccessRate}%</span>
-                                  </div>
-                                  <div>
-                                    <span className="text-gray-600">({taskStat.totalAttempts} completions)</span>
-                                  </div>
-                                </div>
-                              </div>
-
-                              {/* Individual Participant Details */}
-                              {isExpanded && taskCompletions.length > 0 && (
-                                <div className="mt-2 ml-6 space-y-2">
-                                  {taskCompletions.map((completion, idx) => {
-                                    // Find session for this completion to get presentation order
-                                    const session = rawData?.sessions?.find(s => s.id === completion.session_id);
-
-                                    return (
-                                      <div key={`${completion.session_id}-${idx}`} className="flex items-center justify-between text-xs bg-gray-50 p-2 rounded">
-                                        <div className="flex items-center gap-3">
-                                          <span className="text-gray-600">Participant {idx + 1}</span>
-                                          {session?.presentation_order && (
-                                            <span className="text-gray-500 text-xs">({session.presentation_order})</span>
-                                          )}
-                                        </div>
-                                        <div className="flex gap-4">
-                                          <div>
-                                            <span className="text-gray-600">Self-Reported: </span>
-                                            <span className={completion.self_reported_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                                              {completion.self_reported_success ? 'Success' : 'Failure'}
-                                            </span>
-                                          </div>
-                                          <div>
-                                            <span className="text-gray-600">Actual: </span>
-                                            <span className={completion.actual_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
-                                              {completion.actual_success ? 'Success' : 'Failure'}
-                                            </span>
-                                          </div>
-                                          <div>
-                                            <span className="text-gray-600">Time: </span>
-                                            <span className="font-medium">{completion.time_spent_seconds}s</span>
-                                          </div>
-                                          <div>
-                                            <span className="text-gray-600">Difficulty: </span>
-                                            <span className="font-medium">{completion.difficulty_rating}/5</span>
-                                          </div>
-                                        </div>
+                                    <div className="flex items-center gap-3">
+                                      <span className="text-gray-600 font-medium">Participant {idx + 1}</span>
+                                    </div>
+                                    <div className="flex gap-4">
+                                      <div>
+                                        <span className="text-gray-600">Self-Reported: </span>
+                                        <span className={completion.self_reported_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                          {completion.self_reported_success ? 'Success' : 'Failure'}
+                                        </span>
                                       </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
+                                      <div>
+                                        <span className="text-gray-600">Actual: </span>
+                                        <span className={completion.actual_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                          {completion.actual_success ? 'Success' : 'Failure'}
+                                        </span>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-600">Time: </span>
+                                        <span className="font-medium">{completion.time_spent_seconds}s</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-gray-600">Difficulty: </span>
+                                        <span className="font-medium">{completion.difficulty_rating}/5</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
                             </div>
-                          );
-                        })}
-                      </div>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Highlights: Expandable by method */
+                        <div className="text-sm space-y-2">
+                          {['A', 'B', 'C'].map(taskId => {
+                            const taskStat = stats.taskStats[taskId];
+                            if (!taskStat) return null;
+
+                            const taskCompletions = rawData?.taskCompletions?.filter(tc => tc.task_id === taskId) || [];
+                            const isExpanded = expandedTasks[taskId];
+
+                            return (
+                              <div
+                                key={taskId}
+                                className="border-t border-gray-200 py-2"
+                                onMouseEnter={() => setHoveredTask(taskId)}
+                                onMouseLeave={() => setHoveredTask(null)}
+                              >
+                                {/* Average Row */}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <button
+                                      onClick={() => setExpandedTasks(prev => ({ ...prev, [taskId]: !prev[taskId] }))}
+                                      className="text-gray-600 hover:text-gray-900"
+                                      aria-label={isExpanded ? 'Collapse' : 'Expand'}
+                                    >
+                                      <svg
+                                        className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                      >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                      </svg>
+                                    </button>
+                                    <div className={`w-3 h-3 rounded-full ${taskId === 'A' ? 'bg-red-600' : taskId === 'B' ? 'bg-blue-600' : 'bg-green-600'}`}></div>
+                                    <span className="font-medium text-gray-900">{TASK_NAMES[taskId]} (Average)</span>
+                                  </div>
+                                  <div className="flex gap-6 text-sm">
+                                    <div>
+                                      <span className="text-gray-600">Self-Reported: </span>
+                                      <span className="font-medium">{taskStat.selfReportedSuccessRate}%</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-600">Actual: </span>
+                                      <span className="font-medium">{taskStat.actualSuccessRate}%</span>
+                                    </div>
+                                    <div>
+                                      <span className="text-gray-600">({taskStat.totalAttempts} completions)</span>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                {/* Individual Participant Details */}
+                                {isExpanded && taskCompletions.length > 0 && (
+                                  <div className="mt-2 ml-6 space-y-2">
+                                    {taskCompletions.map((completion, idx) => {
+                                      // Find session for this completion to get presentation order
+                                      const session = rawData?.sessions?.find(s => s.id === completion.session_id);
+
+                                      return (
+                                        <div key={`${completion.session_id}-${idx}`} className="flex items-center justify-between text-xs bg-gray-50 p-2 rounded">
+                                          <div className="flex items-center gap-3">
+                                            <span className="text-gray-600">Participant {idx + 1}</span>
+                                            {session?.presentation_order && (
+                                              <span className="text-gray-500 text-xs">({session.presentation_order})</span>
+                                            )}
+                                          </div>
+                                          <div className="flex gap-4">
+                                            <div>
+                                              <span className="text-gray-600">Self-Reported: </span>
+                                              <span className={completion.self_reported_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                                {completion.self_reported_success ? 'Success' : 'Failure'}
+                                              </span>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-600">Actual: </span>
+                                              <span className={completion.actual_success ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                                {completion.actual_success ? 'Success' : 'Failure'}
+                                              </span>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-600">Time: </span>
+                                              <span className="font-medium">{completion.time_spent_seconds}s</span>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-600">Difficulty: </span>
+                                              <span className="font-medium">{completion.difficulty_rating}/5</span>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -1005,17 +1181,41 @@ const TestDetail = () => {
                       {loading ? '...' : stats ? stats.totalParticipants : 0}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Avg. Total Time:</span>
-                    <span className="font-medium">
-                      {loading || !stats || stats.totalParticipants === 0 ? '-' : (() => {
-                        const totalSeconds = Object.values(stats.taskStats).reduce((sum, task) => sum + task.avgTimeSeconds, 0);
-                        const minutes = Math.floor(totalSeconds / 60);
-                        const seconds = totalSeconds % 60;
-                        return `${minutes}:${String(seconds).padStart(2, '0')}`;
-                      })()}
-                    </span>
-                  </div>
+                  {testId === 'index-creation' ? (
+                    <>
+                      <div className="flex justify-between">
+                        <span>Avg. Time:</span>
+                        <span className="font-medium">
+                          {loading || !stats || stats.totalParticipants === 0 ? '-' : (() => {
+                            const taskStat = stats.taskStats['A'];
+                            if (!taskStat) return '-';
+                            const minutes = Math.floor(taskStat.avgTimeSeconds / 60);
+                            const seconds = taskStat.avgTimeSeconds % 60;
+                            return `${minutes}:${String(seconds).padStart(2, '0')}`;
+                          })()}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Avg. Difficulty:</span>
+                        <span className="font-medium">
+                          {loading || !stats || stats.totalParticipants === 0 ? '-' :
+                            stats.taskStats['A'] ? `${stats.taskStats['A'].avgDifficulty} / 5` : '-'}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex justify-between">
+                      <span>Avg. Total Time:</span>
+                      <span className="font-medium">
+                        {loading || !stats || stats.totalParticipants === 0 ? '-' : (() => {
+                          const totalSeconds = Object.values(stats.taskStats).reduce((sum, task) => sum + task.avgTimeSeconds, 0);
+                          const minutes = Math.floor(totalSeconds / 60);
+                          const seconds = totalSeconds % 60;
+                          return `${minutes}:${String(seconds).padStart(2, '0')}`;
+                        })()}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -1030,9 +1230,17 @@ const TestDetail = () => {
                 <p className="text-sm text-gray-500 text-center py-4">No participants yet</p>
               ) : (
                 <div className="space-y-4 max-h-96 overflow-y-auto">
-                  {rawData.sessions.map((session, idx) => {
+                  {(() => {
+                    const sorted = [...rawData.sessions].sort((a, b) => new Date(b.completed_at) - new Date(a.completed_at));
+                    console.log('Sorted sessions:', sorted.map(s => ({ id: s.id.slice(0, 8), completed_at: s.completed_at })));
+                    return sorted;
+                  })().map((session, idx) => {
                     const surveyResponse = rawData.surveyResponses?.find(sr => sr.session_id === session.id);
                     const linkedObs = observations.filter(obs => obs.participantIds?.includes(session.id));
+
+                    // For index-creation test, get survey responses from validation_data
+                    const validationData = rawData.validationData?.find(vd => vd.session_id === session.id);
+                    const indexCreationResponses = validationData?.validation_data?.surveyResponses;
 
                     return (
                       <div key={session.id} className="border-b border-gray-200 pb-4 last:border-b-0">
@@ -1091,7 +1299,8 @@ const TestDetail = () => {
                           </div>
                         )}
 
-                        {surveyResponse && (
+                        {/* Survey responses for Highlights test */}
+                        {surveyResponse && surveyResponse.preferred_method && (
                           <div className="mt-2">
                             <span className={`inline-block px-2 py-1 text-xs font-medium rounded border ${
                               surveyResponse.preferred_method === 'A' ? 'bg-red-100 text-red-800 border-red-200' :
@@ -1101,6 +1310,25 @@ const TestDetail = () => {
                               Preferred: {TASK_NAMES[surveyResponse.preferred_method]}
                             </span>
                             <p className="text-sm text-gray-600 mt-1 italic">"{surveyResponse.preference_reason}"</p>
+                          </div>
+                        )}
+
+                        {/* Survey responses for Index Creation test */}
+                        {indexCreationResponses && indexCreationResponses.length > 0 && (
+                          <div className="mt-2 space-y-2">
+                            <span className="text-xs font-medium text-gray-600">Feedback:</span>
+                            {indexCreationResponses.map((response, respIdx) => {
+                              // Only show the text input questions (confusing and workedWell)
+                              if (response.questionId === 'most-confusing' || response.questionId === 'what-worked-well') {
+                                return (
+                                  <div key={respIdx} className="bg-gray-50 p-2 rounded text-xs">
+                                    <div className="font-medium text-gray-700 mb-1">{response.questionText}</div>
+                                    <div className="text-gray-600 italic">"{response.answer}"</div>
+                                  </div>
+                                );
+                              }
+                              return null;
+                            })}
                           </div>
                         )}
 

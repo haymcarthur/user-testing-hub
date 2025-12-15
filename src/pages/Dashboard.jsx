@@ -12,6 +12,15 @@ const tests = [
     participants: 0, // Will be dynamic later
     url: 'https://highlight-user-test.vercel.app/',
   },
+  {
+    id: 'index-creation',
+    title: 'Index Creation Study',
+    description: 'Testing the interface for adding people to household groups in census records',
+    status: 'planning',
+    created: 'Dec 2025',
+    participants: 0, // Will be dynamic later
+    url: 'https://index-creation-haylee-mcarthurs-projects.vercel.app/',
+  },
   // Add more tests here as needed
 ];
 
