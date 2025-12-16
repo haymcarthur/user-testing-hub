@@ -47,13 +47,24 @@ const Dashboard = () => {
       try {
         const { data, error } = await supabase
           .from('test_sessions')
-          .select('test_id')
+          .select('test_id, project_status')
           .not('completed_at', 'is', null);
 
         if (error) throw error;
 
+        // Count participants by test_id, filtering by their current status
         const counts = data.reduce((acc, session) => {
-          acc[session.test_id] = (acc[session.test_id] || 0) + 1;
+          const testId = session.test_id;
+          // Get the effective status for this test (from localStorage or default)
+          const effectiveStatus = statusOverrides[testId] || tests.find(t => t.id === testId)?.status || 'planning';
+
+          // For 'complete' tests, show 'in progress' results (same logic as TestDetail)
+          const statusFilter = effectiveStatus === 'complete' ? 'in progress' : effectiveStatus;
+
+          // Only count sessions that match the current status filter
+          if (session.project_status === statusFilter) {
+            acc[testId] = (acc[testId] || 0) + 1;
+          }
           return acc;
         }, {});
 
@@ -67,7 +78,7 @@ const Dashboard = () => {
     // Refresh every 30 seconds
     const interval = setInterval(fetchParticipantCounts, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [statusOverrides]);
 
   const handleLogout = () => {
     sessionStorage.removeItem('authenticated');
