@@ -40,7 +40,7 @@ const testData = {
       'Add Gary Fadden and Ronald Fadden to Edgar Fadden\'s household',
     ],
     created: 'December 2025',
-    status: 'planning',
+    status: 'in progress',
     participants: 0,
     url: 'https://index-creation-haylee-mcarthurs-projects.vercel.app/',
   },

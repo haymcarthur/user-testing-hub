@@ -16,7 +16,7 @@ const tests = [
     id: 'index-creation',
     title: 'Index Creation Study',
     description: 'Testing the interface for adding people to household groups in census records',
-    status: 'planning',
+    status: 'in progress',
     created: 'Dec 2025',
     participants: 0, // Will be dynamic later
     url: 'https://index-creation-haylee-mcarthurs-projects.vercel.app/',
