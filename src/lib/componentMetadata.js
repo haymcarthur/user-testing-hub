@@ -847,8 +847,10 @@ export const COMPONENT_METADATA = {
     description: 'Alert banner with icon, message, and optional low emphasis action buttons',
     hasChildren: false,
     props: [
-      { name: 'type', type: PropTypes.ENUM, options: ['info', 'warning', 'error', 'maintenance'], default: 'info', required: false, description: 'Type of alert banner' },
+      { name: 'type', type: PropTypes.ENUM, options: ['info', 'warning', 'error', 'maintenance', 'custom'], default: 'info', required: false, description: 'Type of alert banner' },
       { name: 'message', type: PropTypes.STRING, required: true, description: 'Alert message text' },
+      { name: 'customIcon', type: PropTypes.ENUM, isIcon: true, default: 'NoticeInfo', required: false, showWhen: { type: 'custom' }, description: 'Icon to display for custom type' },
+      { name: 'customIconBackgroundColor', type: PropTypes.STRING, required: false, showWhen: { type: 'custom' }, description: 'Background color for custom icon (e.g., #4A90E2, blue.blue30)' },
       { name: 'primaryButtonLabel', type: PropTypes.STRING, required: false, description: 'Label for primary action button (low emphasis inline blue)' },
       { name: 'onPrimaryClick', type: PropTypes.STRING, required: false, description: 'What happens when primary button is clicked' },
       { name: 'secondaryButtonLabel', type: PropTypes.STRING, required: false, description: 'Label for secondary action button (low emphasis inline blue)' },
@@ -856,7 +858,7 @@ export const COMPONENT_METADATA = {
       { name: 'customNotes', type: PropTypes.STRING, required: false, description: 'Special considerations or requirements' },
     ],
     bestPractices: [
-      { title: 'Choose the Right Type', items: ['Info: General announcements, new features, tips', 'Warning: Important non-critical issues (deprecation, quota warnings)', 'Error: Critical issues requiring attention (outage, failed sync)', 'Maintenance: Scheduled downtime, system updates'] },
+      { title: 'Choose the Right Type', items: ['Info: General announcements, new features, tips', 'Warning: Important non-critical issues (deprecation, quota warnings)', 'Error: Critical issues requiring attention (outage, failed sync)', 'Maintenance: Scheduled downtime, system updates', 'Custom: Specific use cases requiring custom icon/color combination'] },
       { title: 'Message Clarity', items: ['Be concise - one or two sentences maximum', 'Start with the impact: "Your data is not syncing" not "Sync error"', 'Avoid technical jargon unless for technical audience', 'Include what the user should do if action needed'] },
       { title: 'Action Buttons', items: ['Use for actionable alerts only', 'Primary: Main action (Learn More, View Details, Retry)', 'Secondary: Dismissive or alternative action (Dismiss, Later)', 'Limit to 2 buttons maximum', 'Use emphasis="inline" for proper styling'] },
       { title: 'Button Order', items: ['Secondary button appears first (left)', 'Primary button appears second (right)', 'This matches standard dialog button patterns', 'Both buttons use inline emphasis (no background)'] },
