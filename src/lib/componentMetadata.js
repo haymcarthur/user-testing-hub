@@ -710,6 +710,27 @@ export const COMPONENT_METADATA = {
     ],
   },
 
+  Image: {
+    name: 'Image',
+    category: ComponentCategories.VISUALS,
+    description: 'Simple image component with configurable alignment',
+    hasChildren: false,
+    props: [
+      { name: 'src', type: PropTypes.STRING, required: true, description: 'Image filename in public folder (e.g., "logo.png", "photos/hero.jpg")' },
+      { name: 'alt', type: PropTypes.STRING, required: false, description: 'Alternative text for accessibility' },
+      { name: 'alignment', type: PropTypes.ENUM, options: ['left', 'center', 'right'], default: 'left', required: false, description: 'Image alignment' },
+      { name: 'width', type: PropTypes.STRING, default: 'auto', required: false, description: 'Image width (e.g., "100%", "400px", "auto")' },
+      { name: 'height', type: PropTypes.STRING, default: 'auto', required: false, description: 'Image height (e.g., "auto", "300px")' },
+      { name: 'customNotes', type: PropTypes.STRING, required: false, description: 'Special considerations or requirements' },
+    ],
+    bestPractices: [
+      { title: 'Image Files', items: ['Place image files in the public folder', 'Use relative paths from public folder (e.g., "logo.png" or "images/hero.jpg")', 'Supported formats: JPG, PNG, GIF, SVG, WebP'] },
+      { title: 'Accessibility', items: ['Always provide alt text describing the image', 'For decorative images, use alt=""', 'Be descriptive and concise in alt text'] },
+      { title: 'Image Size', items: ['Optimize images before uploading to reduce file size', 'Use appropriate dimensions for your use case', 'Consider responsive sizing with percentage widths'] },
+      { title: 'Alignment', items: ['Left: Default alignment, good for content flow', 'Center: Use for featured images or standalone visuals', 'Right: Use sparingly, good for callouts or sidebars'] },
+    ]
+  },
+
   ImageViewer: {
     name: 'ImageViewer',
     category: ComponentCategories.VISUALS,

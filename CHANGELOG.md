@@ -2,6 +2,52 @@
 
 All notable changes that have been pushed to the production repository (`user-test-hub-package`) are documented here.
 
+## [2026-01-20] - New Image Component with Alignment Options
+
+### Added
+- **Image component** - Simple image component for displaying images with configurable alignment
+- Loads images from the public folder
+- Supports left, center, and right alignment
+- Configurable width and height
+- Built-in accessibility support with alt text
+
+### Component Properties
+- `src` (required) - Image filename in public folder (e.g., "logo.png", "photos/hero.jpg")
+- `alt` - Alternative text for accessibility
+- `alignment` - Image alignment: 'left', 'center', or 'right' (default: 'left')
+- `width` - Image width (e.g., '100%', '400px', 'auto') (default: 'auto')
+- `height` - Image height (e.g., 'auto', '300px') (default: 'auto')
+
+### Best Practices
+- Place image files in the public folder
+- Always provide descriptive alt text for accessibility
+- Use appropriate image dimensions and optimize file sizes
+- Left align for content flow, center for featured images, right for callouts
+
+### Technical Details
+**Files Added:**
+- `ux-zion-library/src/components/Image.jsx` - New Image component
+- Added to `src/lib/componentMetadata.js` in VISUALS category
+
+**Example usage:**
+```jsx
+<Image
+  src="logo.png"
+  alt="Company logo"
+  alignment="center"
+  width="200px"
+/>
+
+<Image
+  src="photos/hero.jpg"
+  alt="Hero banner showing product features"
+  alignment="left"
+  width="100%"
+/>
+```
+
+---
+
 ## [2026-01-20] - AlertBanner Color Picker with Design Tokens
 
 ### Enhanced
