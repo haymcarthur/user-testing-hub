@@ -2,6 +2,61 @@
 
 All notable changes that have been pushed to the production repository (`user-test-hub-package`) are documented here.
 
+## [2026-01-20] - AlertBanner Color Picker with Design Tokens
+
+### Enhanced
+- **AlertBanner custom icon color selection** - Changed from text input to comprehensive dropdown
+- Added all design token colors (~120 options) organized by category
+- Custom hex color option available when "custom" is selected
+
+### Added
+- **Color Token Dropdown** for `customIconBackgroundColor` with categories:
+  - Button Colors (High Emphasis) - 7 curated colors
+  - Gray Scale - 14 shades (gray00-gray100)
+  - Blue - 12 shades (blue00-blue90)
+  - Green - 11 shades (green02-green90)
+  - Yellow - 11 shades (yellow02-yellow90)
+  - Red - 11 shades (red02-red90)
+  - Danger - 11 shades (danger02-danger90)
+  - Purple - 11 shades (purple02-purple90)
+  - Transparent Colors - 20 variants
+  - Custom - Reveals hex color input field
+
+- **`customColorHex` property** - Appears when "custom" color is selected
+- **Color token resolver** - Parses token references (e.g., `buttonColors.highBlue`, `colors.blue.blue60`)
+
+### Technical Details
+**Files Modified:**
+- `ux-zion-library/src/components/AlertBanner.jsx` - Added `resolveColor()` function and `customColorHex` prop
+- `src/lib/componentMetadata.js` - Changed `customIconBackgroundColor` from STRING to ENUM with all color tokens
+- Updated conditional rendering: `customColorHex` only shows when `customIconBackgroundColor === 'custom'`
+
+**How it works:**
+1. User selects `type="custom"` on AlertBanner
+2. Dropdown appears with all design token colors organized by category
+3. If user selects "custom", a hex input field appears
+4. Component resolves color token references to actual hex values at render time
+
+**Example usage:**
+```jsx
+<AlertBanner
+  type="custom"
+  customIcon="DocumentRecordPerson"
+  customIconBackgroundColor="colors.purple.purple60"
+  message="Custom alert with purple icon"
+/>
+
+<AlertBanner
+  type="custom"
+  customIcon="EventBirth"
+  customIconBackgroundColor="custom"
+  customColorHex="#FF6B35"
+  message="Custom alert with hex color"
+/>
+```
+
+---
+
 ## [2026-01-20] - Complete Icon Registry with All 258 Icons
 
 ### Fixed
