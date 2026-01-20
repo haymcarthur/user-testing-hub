@@ -2,6 +2,49 @@
 
 All notable changes that have been pushed to the production repository (`user-test-hub-package`) are documented here.
 
+## [2026-01-20] - Complete Icon Registry with All 258 Icons
+
+### Fixed
+- **Icon Picker now shows all 258 icons** from ux-zion-library (previously only ~100)
+- Missing icons like `DocumentRecordPerson`, `EventBirth`, `PersonFamily` now available
+- Icons are properly categorized into 18 groups for easier browsing
+
+### Added
+- **generate-icon-registry.js** - Script to auto-generate icon registry from library
+- All icon categories: Activities, Content, Controls, Discovery, Documents, Events, General, Help, Logos, Media, Menus, Navigation, Notices, People, Places, Social, Things, Trees
+
+### Technical Details
+**Files Modified:**
+- `src/lib/iconRegistry.js` - Complete registry with all 258 icons, auto-generated
+- `generate-icon-registry.js` - New script to regenerate registry when icons change
+
+**Category Breakdown:**
+- Controls: 28 icons
+- Content: 25 icons
+- Documents: 24 icons (includes DocumentRecordPerson, DocumentRecordSearch, etc.)
+- Places: 22 icons
+- Things: 20 icons
+- Media: 18 icons
+- Social: 18 icons
+- Events: 16 icons (includes EventBirth, EventMarriage, EventCensus, etc.)
+- General: 16 icons
+- Navigation: 13 icons
+- Notices: 13 icons
+- People: 9 icons
+- Activities: 8 icons
+- Help: 8 icons
+- Menus: 8 icons
+- Discovery: 6 icons
+- Trees: 4 icons
+- Logos: 2 icons
+
+To regenerate icon registry when new icons are added to ux-zion-library:
+```bash
+node generate-icon-registry.js
+```
+
+---
+
 ## [2026-01-20] - HelpTutorial Slot-Based Architecture (BREAKING CHANGE)
 
 ### Changed - HelpTutorial Component (BREAKING)
