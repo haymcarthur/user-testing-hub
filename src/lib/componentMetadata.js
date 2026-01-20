@@ -785,7 +785,6 @@ export const COMPONENT_METADATA = {
     hasChildren: true,
     props: [
       { name: 'title', type: PropTypes.STRING, required: false, description: 'Label for this component in the tree' },
-      { name: 'menuItems', type: PropTypes.STRING, required: false, description: 'Instructions for menu items using ListItem component. Describe each item and specify: heading (required), overline (optional), subheading (optional), startElement (icon/avatar/image/checkbox), endIcon (optional). Example: "Home with house icon, Profile with avatar, Settings with gear icon and arrow"' },
       { name: 'position', type: PropTypes.ENUM, options: ['top', 'bottom', 'left', 'right'], default: 'bottom', required: false, description: 'Position relative to anchor button' },
       { name: 'horizontalAlign', type: PropTypes.ENUM, options: ['left', 'center', 'right'], default: 'center', required: false, description: 'Align menu to left, center, or right of anchor button' },
       { name: 'offset', type: PropTypes.NUMBER, default: 8, required: false, description: 'Distance from anchor button in pixels' },

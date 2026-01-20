@@ -2,6 +2,26 @@
 
 All notable changes that have been pushed to the production repository (`user-test-hub-package`) are documented here.
 
+## [2026-01-20] - Removed MenuOverlay menuItems Property
+
+### Changed
+- **MenuOverlay component** - Removed the `menuItems` property
+- Users should now add menu items directly as child components (using ListItem)
+- Simplifies the component interface by removing redundant property
+
+### Rationale
+Since MenuOverlay supports adding child components (hasChildren: true), the menuItems text property was unnecessary. Users can build the menu structure directly in the component tree by adding ListItem components as children, which provides better visual feedback and more flexibility.
+
+### Migration
+If you were using the menuItems property:
+- **Before:** Set menuItems property with text description
+- **After:** Add ListItem components as children to the MenuOverlay
+
+**Files Modified:**
+- `src/lib/componentMetadata.js` - Removed menuItems prop from MenuOverlay
+
+---
+
 ## [2026-01-20] - Fixed Component Tree Auto-Expansion Issue
 
 ### Fixed
