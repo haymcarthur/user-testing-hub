@@ -2,6 +2,31 @@
 
 All notable changes that have been pushed to the production repository (`user-test-hub-package`) are documented here.
 
+## [2026-01-20] - Fixed Component Tree Auto-Expansion Issue
+
+### Fixed
+- **Component Tree collapse state preservation** - Manually collapsed parent components now stay collapsed when selecting or adding components
+- Previously, the tree would auto-expand ALL parent components whenever any component was selected or added
+- Now only NEW components are auto-expanded; existing components preserve their manual collapse state
+
+### Technical Details
+**Problem:** The `useEffect` hook was expanding all nodes with children whenever the `components` prop changed, ignoring manual user collapse actions.
+
+**Solution:**
+- Track previous component IDs to identify NEW vs. existing components
+- Only auto-expand nodes that are newly added to the tree
+- Preserve the collapsed/expanded state of all existing nodes
+
+**Files Modified:**
+- `src/components/prototypeBuilder/ComponentTree.jsx` - Added `previousComponentIds` state to track component changes
+
+**User Impact:**
+- Better UX: Collapsed sections stay collapsed during editing
+- Reduced scrolling and navigation friction
+- Manual collapse choices are now respected
+
+---
+
 ## [2026-01-20] - New Image Component with Alignment Options
 
 ### Added
