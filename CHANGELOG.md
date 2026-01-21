@@ -2,6 +2,40 @@
 
 All notable changes that have been pushed to the production repository (`user-test-hub-package`) are documented here.
 
+## [2026-01-20] - Visual Indicator for Saved Custom Components
+
+### Added
+- **Saved component indicator** - Green bookmark icon appears next to components that match saved custom components
+- Helps users track which components have been saved and which haven't
+- Icon automatically disappears when component is modified (props changed, children added/removed)
+
+### How It Works
+1. When you insert a saved custom component, it gets a green bookmark icon 🔖
+2. The icon indicates the component matches its saved version exactly
+3. As soon as you modify the component (change props, add/remove children), the icon disappears
+4. This helps you identify:
+   - Which components are already saved (have the icon)
+   - Which components you still need to save (no icon)
+   - Which components have been modified since saving (icon disappeared)
+
+### Technical Details
+**Implementation:**
+- Added `savedComponentId` and `savedComponentHash` to components when instantiated from saved components
+- Created `isUnmodifiedSavedComponent()` function to check if current component matches saved version
+- Hash includes: component type, props, children count, and slot children keys
+- ComponentTree displays green bookmark icon for unmodified saved components
+
+**Files Modified:**
+- `src/lib/savedComponents.js` - Added hash tracking and comparison functions
+- `src/components/prototypeBuilder/ComponentTree.jsx` - Added visual indicator display
+
+**User Benefit:**
+- Easily see which components are already saved as custom components
+- Know when a component has been modified vs. still matches the saved version
+- Avoid duplicate saves and confusion about what's been saved
+
+---
+
 ## [2026-01-20] - Removed MenuOverlay menuItems Property
 
 ### Changed

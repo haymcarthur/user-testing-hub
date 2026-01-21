@@ -7,6 +7,7 @@
 
 import { useState, useEffect } from 'react';
 import { getComponentMetadata } from '../../lib/componentMetadata';
+import { isUnmodifiedSavedComponent } from '../../lib/savedComponents';
 
 export function ComponentTree({
   components,
@@ -285,6 +286,9 @@ export function ComponentTree({
     const isDropTarget = dropTargetId === component.id;
     const canHaveChildren = metadata?.hasChildren || false;
 
+    // Check if this is an unmodified saved component
+    const isSavedComponent = isUnmodifiedSavedComponent(component);
+
     return (
       <div key={component.id} className="select-none">
         {/* Drop indicator before */}
@@ -339,6 +343,18 @@ export function ComponentTree({
           >
             {metadata?.hasChildren ? '📁' : '📄'}
           </div>
+
+          {/* Saved Component Indicator */}
+          {isSavedComponent && (
+            <div
+              className="flex-shrink-0 text-xs"
+              title="This component matches a saved custom component"
+            >
+              <svg className="w-3.5 h-3.5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
+              </svg>
+            </div>
+          )}
 
           {/* Component Name */}
           <div
