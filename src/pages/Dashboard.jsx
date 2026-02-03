@@ -21,6 +21,15 @@ const tests = [
     participants: 0, // Will be dynamic later
     url: 'https://index-creation-haylee-mcarthurs-projects.vercel.app/',
   },
+  {
+    id: 'ai-auto-index',
+    title: 'AI Auto Index Study',
+    description: 'A/B test comparing AI-assisted vs manual form filling for index card creation',
+    status: 'planning',
+    created: 'Feb 2026',
+    participants: 0, // Will be dynamic later
+    url: 'https://ai-auto-indexing.vercel.app/',
+  },
   // Add more tests here as needed
 ];
 

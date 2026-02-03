@@ -44,6 +44,20 @@ const testData = {
     participants: 0,
     url: 'https://index-creation-haylee-mcarthurs-projects.vercel.app/',
   },
+  'ai-auto-index': {
+    title: 'AI Auto Index Study',
+    description: 'A/B test comparing AI-assisted vs manual form filling for index card creation',
+    objective: 'Evaluate the efficiency and accuracy of AI-powered auto-indexing compared to traditional manual data entry',
+    tasks: [
+      'Complete the index card form using assigned method (AI-assisted or manual)',
+      'Review and validate the auto-filled information',
+      'Submit completed index card',
+    ],
+    created: 'February 2026',
+    status: 'planning',
+    participants: 0,
+    url: 'https://ai-auto-indexing.vercel.app/',
+  },
 };
 
 const TestDetail = () => {
