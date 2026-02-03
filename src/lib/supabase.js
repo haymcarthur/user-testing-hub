@@ -267,3 +267,88 @@ export async function clearTestData(testId) {
     throw error;
   }
 }
+
+// ============================================
+// OBSERVATIONS
+// ============================================
+
+// Fetch all observations for a test
+export async function fetchObservations(testId = 'highlights') {
+  try {
+    const { data, error } = await supabase
+      .from('observations')
+      .select('*')
+      .eq('test_id', testId)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+
+    return data || [];
+  } catch (error) {
+    console.error('Error fetching observations:', error);
+    throw error;
+  }
+}
+
+// Save a new observation
+export async function saveObservation(testId = 'highlights', observationData) {
+  try {
+    const { data, error } = await supabase
+      .from('observations')
+      .insert({
+        test_id: testId,
+        text: observationData.text,
+        participant_ids: observationData.participantIds || [],
+        created_at: observationData.createdAt || new Date().toISOString(),
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.error('Error saving observation:', error);
+    throw error;
+  }
+}
+
+// Update an existing observation
+export async function updateObservation(observationId, updates) {
+  try {
+    const updateData = {};
+    if (updates.text !== undefined) updateData.text = updates.text;
+    if (updates.participantIds !== undefined) updateData.participant_ids = updates.participantIds;
+
+    const { data, error } = await supabase
+      .from('observations')
+      .update(updateData)
+      .eq('id', observationId)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    console.error('Error updating observation:', error);
+    throw error;
+  }
+}
+
+// Delete an observation
+export async function deleteObservation(observationId) {
+  try {
+    const { error } = await supabase
+      .from('observations')
+      .delete()
+      .eq('id', observationId);
+
+    if (error) throw error;
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting observation:', error);
+    throw error;
+  }
+}
