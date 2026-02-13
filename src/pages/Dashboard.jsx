@@ -28,7 +28,7 @@ const tests = [
     status: 'planning',
     created: 'Feb 2026',
     participants: 0, // Will be dynamic later
-    url: 'http://localhost:3004/',
+    url: 'https://ai-auto-indexing.vercel.app/',
   },
   // Add more tests here as needed
 ];

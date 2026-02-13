@@ -70,7 +70,7 @@ const testData = {
     created: 'February 2026',
     status: 'planning',
     participants: 0,
-    url: 'http://localhost:3004/',
+    url: 'https://ai-auto-indexing.vercel.app/',
   },
 };
 
