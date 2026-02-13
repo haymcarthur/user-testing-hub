@@ -86,9 +86,13 @@ export function calculateStatistics(data) {
   // Total participants
   const totalParticipants = sessions.length;
 
+  // Dynamically determine task IDs from task completions (handles both 'A/B/C' and 'Prompt/Highlight')
+  const uniqueTaskIds = [...new Set(taskCompletions.map(tc => tc.task_id))];
+  console.log('[STATS] Unique task IDs found:', uniqueTaskIds);
+
   // Task statistics
   const taskStats = {};
-  ['A', 'B', 'C'].forEach(taskId => {
+  uniqueTaskIds.forEach(taskId => {
     const taskData = taskCompletions.filter(tc => tc.task_id === taskId);
 
     if (taskData.length > 0) {
@@ -107,53 +111,62 @@ export function calculateStatistics(data) {
     }
   });
 
-  // Method preferences - only count preferences from filtered sessions
+  // Method preferences - survey_responses table uses preferred_method column directly
   const sessionIds = sessions.map(s => s.id);
-  const filteredSurveyResponses = surveyResponses.filter(sr => sessionIds.includes(sr.session_id));
+  const preferenceResponses = surveyResponses.filter(sr =>
+    sessionIds.includes(sr.session_id) && sr.preferred_method
+  );
 
   console.log('[STATS] Total sessions:', sessions.length);
   console.log('[STATS] Session IDs:', sessionIds);
   console.log('[STATS] Survey responses received:', surveyResponses.length);
-  console.log('[STATS] Filtered survey responses:', filteredSurveyResponses.length);
-  console.log('[STATS] Survey response session IDs:', surveyResponses.map(sr => sr.session_id));
+  console.log('[STATS] Preference responses:', preferenceResponses.length);
 
-  // IMPORTANT: Deduplicate survey responses - only keep the most recent one per session
-  // This handles cases where survey was accidentally submitted multiple times
-  const surveyResponsesBySession = new Map();
-  filteredSurveyResponses.forEach(sr => {
-    if (!surveyResponsesBySession.has(sr.session_id) ||
-        new Date(sr.created_at) > new Date(surveyResponsesBySession.get(sr.session_id).created_at)) {
-      surveyResponsesBySession.set(sr.session_id, sr);
+  // Deduplicate preference responses - only keep the most recent one per session
+  const preferencesBySession = new Map();
+  preferenceResponses.forEach(sr => {
+    if (!preferencesBySession.has(sr.session_id) ||
+        new Date(sr.created_at) > new Date(preferencesBySession.get(sr.session_id).created_at)) {
+      preferencesBySession.set(sr.session_id, sr);
     }
   });
-  const uniqueSurveyResponses = Array.from(surveyResponsesBySession.values());
+  const uniquePreferences = Array.from(preferencesBySession.values());
 
-  console.log('[STATS] Unique survey responses (after deduplication):', uniqueSurveyResponses.length);
+  console.log('[STATS] Unique preferences (after deduplication):', uniquePreferences.length);
 
+  // Count preferences - read from preferred_method column
   const preferences = {};
-  uniqueSurveyResponses.forEach(sr => {
-    preferences[sr.preferred_method] = (preferences[sr.preferred_method] || 0) + 1;
+  uniquePreferences.forEach(sr => {
+    const method = sr.preferred_method; // Database column: preferred_method
+    preferences[method] = (preferences[method] || 0) + 1;
   });
 
   console.log('[STATS] Preference counts:', preferences);
 
   const preferenceStats = Object.entries(preferences).map(([method, count]) => ({
-    method: method, // Keep as 'A', 'B', 'C' - UI will map to display names
+    method: method,
     count,
-    percentage: uniqueSurveyResponses.length > 0 ? Math.round((count / uniqueSurveyResponses.length) * 100) : 0,
+    percentage: uniquePreferences.length > 0 ? Math.round((count / uniquePreferences.length) * 100) : 0,
   }));
 
-  // Get preference reasons - only from unique survey responses
-  const preferenceReasons = uniqueSurveyResponses.map(sr => ({
+  // Get overall feedback - stored in preference_reason column
+  const uniqueFeedback = uniquePreferences.filter(sr => sr.preference_reason);
+
+  // Preference reasons - map preferred_method to preference_reason
+  const preferenceReasons = uniquePreferences.map(sr => ({
     method: sr.preferred_method,
-    reason: sr.preference_reason,
-  }));
+    reason: sr.preference_reason || '',
+  })).filter(pr => pr.reason); // Only include if reason exists
 
   return {
     totalParticipants,
     taskStats,
     preferenceStats,
-    preferenceReasons,
+    preferenceReasons: preferenceReasons,
+    overallFeedback: uniqueFeedback.map(sr => ({
+      sessionId: sr.session_id,
+      feedback: sr.preference_reason
+    }))
   };
 }
 

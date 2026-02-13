@@ -10,11 +10,25 @@ import {
   deleteObservation
 } from '../lib/supabase';
 
-// Task name mapping (Round 2: Red/Blue/Green Method)
-const TASK_NAMES = {
-  'A': 'Red Method',
-  'B': 'Blue Method',
-  'C': 'Green Method'
+// Task name mapping function
+// For highlights test: A/B/C → Red/Blue/Green Method
+// For ai-auto-index test: A/B → Prompt/Highlight Method (mapped in database)
+const getTaskName = (taskId, testId) => {
+  if (testId === 'ai-auto-index') {
+    const aiAutoIndexNames = {
+      'A': 'Prompt Method',
+      'B': 'Highlight Method'
+    };
+    return aiAutoIndexNames[taskId] || taskId;
+  }
+
+  // Default mapping for highlights test
+  const defaultNames = {
+    'A': 'Red Method',
+    'B': 'Blue Method',
+    'C': 'Green Method'
+  };
+  return defaultNames[taskId] || taskId;
 };
 
 const testData = {
@@ -56,7 +70,7 @@ const testData = {
     created: 'February 2026',
     status: 'planning',
     participants: 0,
-    url: 'https://ai-auto-indexing.vercel.app/',
+    url: 'http://localhost:3004/',
   },
 };
 
@@ -65,6 +79,7 @@ const TestDetail = () => {
   const test = testData[testId];
   const [stats, setStats] = useState(null);
   const [rawData, setRawData] = useState(null);
+  const [participantNumberMap, setParticipantNumberMap] = useState({}); // Maps session ID -> participant number
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showRawData, setShowRawData] = useState(false);
@@ -238,9 +253,23 @@ const TestDetail = () => {
         const data = await fetchTestResults(testId, statusFilter, testRoundFilter);
         console.log('Loaded sessions:', data.sessions?.length, 'sessions');
         console.log('Session details:', data.sessions?.map(s => ({ id: s.id, status: s.project_status, round: s.test_round, test_id: s.test_id })));
+
+        // Create participant number mapping based on creation order (oldest first = Participant 1)
+        const participantMap = {};
+        if (data.sessions && data.sessions.length > 0) {
+          const sortedByCreation = [...data.sessions].sort((a, b) =>
+            new Date(a.created_at) - new Date(b.created_at)
+          );
+          sortedByCreation.forEach((session, idx) => {
+            participantMap[session.id] = idx + 1;
+          });
+          console.log('Participant number mapping created:', participantMap);
+        }
+
         const statistics = calculateStatistics(data);
         setStats(statistics);
         setRawData(data);
+        setParticipantNumberMap(participantMap);
       } catch (err) {
         console.error('Error loading results:', err);
         setError(err.message);
@@ -274,7 +303,7 @@ const TestDetail = () => {
     ['A', 'B', 'C'].forEach(taskId => {
       const taskStat = stats.taskStats[taskId];
       if (taskStat) {
-        csv += `${TASK_NAMES[taskId]},${taskStat.avgTimeSeconds},${taskStat.avgDifficulty},${taskStat.selfReportedSuccessRate},${taskStat.actualSuccessRate},${taskStat.totalAttempts}\n`;
+        csv += `${getTaskName(taskId, testId)},${taskStat.avgTimeSeconds},${taskStat.avgDifficulty},${taskStat.selfReportedSuccessRate},${taskStat.actualSuccessRate},${taskStat.totalAttempts}\n`;
       }
     });
 
@@ -541,9 +570,22 @@ const TestDetail = () => {
       const statusFilter = currentStatus === 'complete' ? 'in progress' : currentStatus;
       console.log('Reloading results with status:', statusFilter);
       const data = await fetchTestResults(testId, statusFilter, testRoundFilter);
+
+      // Recreate participant number mapping
+      const participantMap = {};
+      if (data.sessions && data.sessions.length > 0) {
+        const sortedByCreation = [...data.sessions].sort((a, b) =>
+          new Date(a.created_at) - new Date(b.created_at)
+        );
+        sortedByCreation.forEach((session, idx) => {
+          participantMap[session.id] = idx + 1;
+        });
+      }
+
       const statistics = calculateStatistics(data);
       setStats(statistics);
       setRawData(data);
+      setParticipantNumberMap(participantMap);
 
       console.log('Delete completed successfully');
       alert('Participant deleted successfully');
@@ -705,25 +747,28 @@ const TestDetail = () => {
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3">Task Performance</h3>
 
-                    {/* Average Time Bar Graph - Only for Highlights test */}
-                    {testId !== 'index-creation' && (
+                    {/* Average Time Bar Graph - For tests with multiple tasks */}
+                    {testId !== 'index-creation' && Object.keys(stats.taskStats).length > 1 && (
                       <div className="mb-6">
                         <h4 className="text-sm font-medium text-gray-700 mb-3">Average Time (seconds)</h4>
                         <div className="space-y-3">
-                          {['A', 'B', 'C'].map(taskId => {
+                          {Object.keys(stats.taskStats).map(taskId => {
                             const taskStat = stats.taskStats[taskId];
                             if (!taskStat) return null;
 
                             const maxTime = Math.max(...Object.values(stats.taskStats).map(t => t.avgTimeSeconds));
                             const widthPercent = (taskStat.avgTimeSeconds / maxTime) * 100;
 
+                            // Color coding: A (Prompt) = red, B (Highlight) = blue, C = green
+                            const barColor = taskId === 'A' ? 'bg-red-600' : taskId === 'B' ? 'bg-blue-600' : 'bg-green-600';
+
                             return (
                               <div key={taskId}>
                                 <div className="flex items-center gap-3 mb-1">
-                                  <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[taskId]}</span>
+                                  <span className="text-sm font-medium text-gray-700 w-32">{getTaskName(taskId, testId) || taskId}</span>
                                   <div className="flex-1 bg-gray-200 rounded h-8 relative">
                                     <div
-                                      className="bg-blue-600 h-8 rounded flex items-center px-3"
+                                      className={`${barColor} h-8 rounded flex items-center px-3`}
                                       style={{ width: `${widthPercent}%` }}
                                     >
                                       <span className="text-sm font-medium text-white">{taskStat.avgTimeSeconds}s</span>
@@ -737,12 +782,12 @@ const TestDetail = () => {
                       </div>
                     )}
 
-                    {/* Average Difficulty Bar Graph - Only for Highlights test */}
-                    {testId !== 'index-creation' && (
+                    {/* Average Difficulty Bar Graph - For tests with multiple tasks */}
+                    {testId !== 'index-creation' && Object.keys(stats.taskStats).length > 1 && (
                       <div className="mb-6">
                         <h4 className="text-sm font-medium text-gray-700 mb-3">Average Difficulty (1 = Very Difficult, 5 = Very Easy)</h4>
                         <div className="space-y-3">
-                          {['A', 'B', 'C'].map(taskId => {
+                          {Object.keys(stats.taskStats).map(taskId => {
                             const taskStat = stats.taskStats[taskId];
                             if (!taskStat || !taskStat.avgDifficulty) return null;
 
@@ -751,13 +796,16 @@ const TestDetail = () => {
                               : taskStat.avgDifficulty;
                             const widthPercent = (avgDifficultyNum / 5) * 100;
 
+                            // Color coding: A (Prompt) = red, B (Highlight) = blue, C = green
+                            const barColor = taskId === 'A' ? 'bg-red-600' : taskId === 'B' ? 'bg-blue-600' : 'bg-green-600';
+
                             return (
                               <div key={taskId}>
                                 <div className="flex items-center gap-3 mb-1">
-                                  <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[taskId]}</span>
+                                  <span className="text-sm font-medium text-gray-700 w-32">{getTaskName(taskId, testId) || taskId}</span>
                                   <div className="flex-1 bg-gray-200 rounded h-8 relative">
                                     <div
-                                      className="bg-green-600 h-8 rounded flex items-center px-3"
+                                      className={`${barColor} h-8 rounded flex items-center px-3`}
                                       style={{ width: `${widthPercent}%` }}
                                     >
                                       <span className="text-sm font-medium text-white">{avgDifficultyNum.toFixed(1)} / 5</span>
@@ -906,7 +954,7 @@ const TestDetail = () => {
                                     opacity: isVisible ? 1 : 0,
                                     zIndex: isHighlighted ? 10 : 1
                                   }}
-                                  title={`${TASK_NAMES[completion.task_id]}: ${timeSpent}s, Difficulty ${difficulty}/5, ${completion.actual_success ? 'Success' : 'Failure'}`}
+                                  title={`${getTaskName(completion.task_id, testId)}: ${timeSpent}s, Difficulty ${difficulty}/5, ${completion.actual_success ? 'Success' : 'Failure'}`}
                                 >
                                   <div className={`w-3 h-3 ${dotColor} rounded-full shadow-md ${dotBorder}`}>
                                   </div>
@@ -950,7 +998,7 @@ const TestDetail = () => {
                                     onMouseLeave={() => setHoveredParticipant(null)}
                                   >
                                     <div className="flex items-center gap-3">
-                                      <span className="text-gray-600 font-medium">Participant {idx + 1}</span>
+                                      <span className="text-gray-600 font-medium">Participant {participantNumberMap[completion.session_id] || idx + 1}</span>
                                     </div>
                                     <div className="flex gap-4">
                                       <div>
@@ -1015,7 +1063,7 @@ const TestDetail = () => {
                                       </svg>
                                     </button>
                                     <div className={`w-3 h-3 rounded-full ${taskId === 'A' ? 'bg-red-600' : taskId === 'B' ? 'bg-blue-600' : 'bg-green-600'}`}></div>
-                                    <span className="font-medium text-gray-900">{TASK_NAMES[taskId]} (Average)</span>
+                                    <span className="font-medium text-gray-900">{getTaskName(taskId, testId)} (Average)</span>
                                   </div>
                                   <div className="flex gap-6 text-sm">
                                     <div>
@@ -1042,7 +1090,7 @@ const TestDetail = () => {
                                       return (
                                         <div key={`${completion.session_id}-${idx}`} className="flex items-center justify-between text-xs bg-gray-50 p-2 rounded">
                                           <div className="flex items-center gap-3">
-                                            <span className="text-gray-600">Participant {idx + 1}</span>
+                                            <span className="text-gray-600">Participant {participantNumberMap[completion.session_id] || idx + 1}</span>
                                             {session?.presentation_order && (
                                               <span className="text-gray-500 text-xs">({session.presentation_order})</span>
                                             )}
@@ -1089,7 +1137,7 @@ const TestDetail = () => {
                       <div className="space-y-2">
                         {stats.preferenceStats.sort((a, b) => b.count - a.count).map(pref => (
                           <div key={pref.method} className="flex items-center gap-3">
-                            <span className="text-sm font-medium text-gray-700 w-32">{TASK_NAMES[pref.method] || pref.method}</span>
+                            <span className="text-sm font-medium text-gray-700 w-32">{getTaskName(pref.method, testId) || pref.method}</span>
                             <div className="flex-1 bg-gray-200 rounded-full h-6 relative">
                               <div
                                 className="bg-blue-600 h-6 rounded-full flex items-center justify-end px-2"
@@ -1099,6 +1147,21 @@ const TestDetail = () => {
                               </div>
                             </div>
                             <span className="text-sm text-gray-600 w-12">{pref.count}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Overall Feedback - for ai-auto-index test */}
+                  {testId === 'ai-auto-index' && stats.overallFeedback && stats.overallFeedback.length > 0 && (
+                    <div>
+                      <h3 className="text-lg font-medium text-gray-900 mb-3">Overall Feedback</h3>
+                      <div className="space-y-2">
+                        {stats.overallFeedback.map((item, idx) => (
+                          <div key={item.sessionId || idx} className="bg-gray-50 p-3 rounded">
+                            <p className="text-sm text-gray-700 italic">"{item.feedback}"</p>
+                            <span className="text-xs text-gray-500 mt-1">Participant {participantNumberMap[item.sessionId] || idx + 1}</span>
                           </div>
                         ))}
                       </div>
@@ -1261,7 +1324,7 @@ const TestDetail = () => {
                         <div className="flex justify-between items-start mb-2">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <span className="font-medium text-gray-900">Participant {idx + 1}</span>
+                              <span className="font-medium text-gray-900">Participant {participantNumberMap[session.id] || idx + 1}</span>
                               {session.recording_error && !session.recording_url && (
                                 <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded" title="Recording failed">
                                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1321,7 +1384,7 @@ const TestDetail = () => {
                               surveyResponse.preferred_method === 'B' ? 'bg-blue-100 text-blue-800 border-blue-200' :
                               'bg-green-100 text-green-800 border-green-200'
                             }`}>
-                              Preferred: {TASK_NAMES[surveyResponse.preferred_method]}
+                              Preferred: {getTaskName(surveyResponse.preferred_method, testId)}
                             </span>
                             <p className="text-sm text-gray-600 mt-1 italic">"{surveyResponse.preference_reason}"</p>
                           </div>
@@ -1546,7 +1609,7 @@ const TestDetail = () => {
               <div>
                 <h2 className="text-xl font-bold text-gray-900">Screen Recording</h2>
                 <p className="text-sm text-gray-500">
-                  Participant {rawData?.sessions?.findIndex(s => s.id === videoModalSession.id) + 1} - {new Date(videoModalSession.completed_at).toLocaleDateString()}
+                  Participant {participantNumberMap[videoModalSession.id] || (rawData?.sessions?.findIndex(s => s.id === videoModalSession.id) + 1)} - {new Date(videoModalSession.completed_at).toLocaleDateString()}
                 </p>
               </div>
               <button
