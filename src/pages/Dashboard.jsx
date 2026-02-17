@@ -61,23 +61,22 @@ const Dashboard = () => {
 
         if (error) throw error;
 
-        // Count participants by test_id, filtering by their current status
-        const counts = data.reduce((acc, session) => {
+        // Count participants per test, per status
+        // Store as: { 'test-id': { 'planning': 5, 'in progress': 10, 'complete': 0 } }
+        const countsByTestAndStatus = {};
+
+        data.forEach(session => {
           const testId = session.test_id;
-          // Get the effective status for this test (from localStorage or default)
-          const effectiveStatus = statusOverrides[testId] || tests.find(t => t.id === testId)?.status || 'planning';
+          const status = session.project_status || 'planning';
 
-          // For 'complete' tests, show 'in progress' results (same logic as TestDetail)
-          const statusFilter = effectiveStatus === 'complete' ? 'in progress' : effectiveStatus;
-
-          // Only count sessions that match the current status filter
-          if (session.project_status === statusFilter) {
-            acc[testId] = (acc[testId] || 0) + 1;
+          if (!countsByTestAndStatus[testId]) {
+            countsByTestAndStatus[testId] = {};
           }
-          return acc;
-        }, {});
 
-        setParticipantCounts(counts);
+          countsByTestAndStatus[testId][status] = (countsByTestAndStatus[testId][status] || 0) + 1;
+        });
+
+        setParticipantCounts(countsByTestAndStatus);
       } catch (err) {
         console.error('Error fetching participant counts:', err);
       }
@@ -87,7 +86,7 @@ const Dashboard = () => {
     // Refresh every 30 seconds
     const interval = setInterval(fetchParticipantCounts, 30000);
     return () => clearInterval(interval);
-  }, [statusOverrides]);
+  }, []);
 
   const handleLogout = () => {
     sessionStorage.removeItem('authenticated');
@@ -203,7 +202,13 @@ const Dashboard = () => {
                 <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
                   <span>Created: {test.created}</span>
                   <span>•</span>
-                  <span>{participantCounts[test.id] || 0} participants</span>
+                  <span>
+                    {(() => {
+                      // For 'complete' tests, show 'in progress' counts (same logic as TestDetail)
+                      const statusToShow = test.status === 'complete' ? 'in progress' : test.status;
+                      return participantCounts[test.id]?.[statusToShow] || 0;
+                    })()} participants
+                  </span>
                 </div>
 
                 <div className="flex gap-2">
